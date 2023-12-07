@@ -1,0 +1,4 @@
+services:
+  # wordpress:
+  #   volumes:
+  #     - "../src:/var/www/html/wp-content/plugins/YOUR_PLUGIN_SLUG"

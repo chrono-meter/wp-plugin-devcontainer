@@ -1,0 +1,73 @@
+services:
+
+  mysql:
+    extends:
+      file: common.yml
+      service: mysql
+
+
+  wordpress:
+    extends:
+      file: common.yml
+      service: wordpress
+    volumes:
+      - "..:/var/www/html/.workspace"
+    environment:
+      PAGER: cat
+      WORDPRESS_DEBUG: "yes"
+      WORDPRESS_INSTALL_TITLE: "WordPress in devcontainer"
+      WORDPRESS_CONFIG_EXTRA: |+
+        // AT FIRST, define debug settings.
+        error_reporting( E_ALL );
+        @ini_set( 'display_errors', 1 );
+
+        defined( 'WP_ENVIRONMENT_TYPE' ) || define( 'WP_ENVIRONMENT_TYPE', 'development' );
+        defined( 'WP_DEVELOPMENT_MODE' ) || define( 'WP_DEVELOPMENT_MODE', 'plugin' );
+        defined( 'WP_DEBUG_LOG' ) || define( 'WP_DEBUG_LOG', true );
+        defined( 'WP_DEBUG_DISPLAY' ) || define( 'WP_DEBUG_DISPLAY', true );
+        defined( 'WP_DISABLE_FATAL_ERROR_HANDLER' ) || define( 'WP_DISABLE_FATAL_ERROR_HANDLER', true );
+        defined( 'SCRIPT_DEBUG' ) || define( 'SCRIPT_DEBUG', true );
+        defined( 'SAVEQUERIES' ) || define( 'SAVEQUERIES', true );
+        $$GLOBALS['wp_filter']['wp_php_error_message'][10][] = [
+          'accepted_args' => 2,
+          'function'      => function ( $$message, $$error ) {
+            return $$error['message'] ? nl2br( $$error['message'] ) : $$message;
+          },
+        ];
+
+        require_once '/var/www/html/.workspace/.devcontainer/utils/spoofing-hostport.php';
+        require_once '/var/www/html/.workspace/.devcontainer/utils/wpcli-role-import-export.php';
+
+        $$GLOBALS['wp_filter']['wp_mail_from'][10][] = [
+          'accepted_args' => 0,
+          'function'      => fn () => 'noreply@wordpress.local',
+        ];
+
+        // https://wordpress.org/documentation/article/configuring-automatic-background-updates/
+        defined( 'AUTOMATIC_UPDATER_DISABLED' ) || define( 'AUTOMATIC_UPDATER_DISABLED', true );
+
+        defined( 'ALLOW_UNFILTERED_UPLOADS' ) || define( 'ALLOW_UNFILTERED_UPLOADS', true );
+
+        $$GLOBALS['wp_filter']['init'][10][] = [
+          'accepted_args' => 0,
+          'function'      => fn () => wp_deregister_script( 'heartbeat' ),
+        ];
+
+        /** @see \QM_Collector_PHP_Errors::set_up() */
+        defined( 'QM_DISABLE_ERROR_HANDLER' ) || define( 'QM_DISABLE_ERROR_HANDLER', true );
+        defined( 'QM_DARK_MODE' ) || define( 'QM_DARK_MODE', true );
+        defined( 'QM_ENABLE_CAPS_PANEL' ) || define( 'QM_ENABLE_CAPS_PANEL', true );
+        $$GLOBALS['wp_filter']['user_has_cap'][10][] = [
+          'accepted_args' => 2,
+          'function'      => function ( $$result, array $$caps ) {
+            if ( isset( $$caps[0] ) && $$caps[0] === 'view_query_monitor' ) {
+              $$result['view_query_monitor'] = true;
+            }
+
+            return $$result;
+          },
+        ];
+
+
+networks:
+  wordpress:

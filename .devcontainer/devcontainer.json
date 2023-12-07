@@ -1,0 +1,118 @@
+{
+    "name": "WordPress plugin development",
+    "dockerComposeFile": ["devcontainer-docker-compose.yml", "../devcontainer-docker-compose-options.yml"],
+    "service": "wordpress",
+    "features": {
+        // https://github.com/devcontainers/features/tree/main/src/docker-in-docker
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {
+            "moby": false,
+            "dockerDashComposeVersion": "v2"
+        }
+    },
+    "forwardPorts": [
+        "wordpress:80"
+    ],
+    "portsAttributes": {
+        "wordpress:80": {"label": "WordPress"},
+        "9003": {"label": "Xdebug"},
+        "4444": {"label": "Selenium in docker"},
+        "8080": {"label": "WordPress in docker"}
+    },
+    "workspaceFolder": "/var/www/html",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.shell.linux": "/bin/bash",
+                "php.suggest.basic": false, // avoids duplicate autocomplete
+                "search.useIgnoreFiles": false,
+                "[php]": {
+                    "editor.wordSeparators": "`~!@#%^&*()-=+[{]}\\|;:'\",.<>/?"
+                },
+                // ms-azuretools.vscode-docker
+                // https://code.visualstudio.com/docs/containers/reference
+                "docker.commands.composeUp": [
+                    {
+                        "label": "dev-match",
+                        "template": "${composeCommand} --file ${configurationFile} up --abort-on-container-exit --always-recreate-deps --build --detach",
+                        "match": "test"
+                    }
+                ],
+                "docker.commands.composeDown": [
+                    {
+                        "label": "dev-match",
+                        "template": "${composeCommand} --file ${configurationFile} down --remove-orphans --volumes",
+                        "match": "test"
+                    }
+                ],
+                "docker.commands.attach": "${containerCommand} exec -it ${containerId} sh",
+                // xdebug.php-pack
+                "php.executablePath": "/usr/local/bin/php",
+                //"php.debug.ideKey": "PHPSTORM",
+                //"php.debug.ideKey": "VSCODE",
+                // ValeryanM.vscode-phpsab
+                "phpsab.standard": "WordPress",
+                "phpsab.snifferEnable": true, // disable this if you don't need suggestions
+                "phpsab.snifferShowSources": true,
+                "phpsab.autoRulesetSearch": false,
+                "phpsab.executablePathCBF": "/var/www/.composer/vendor/bin/phpcbf",
+                "phpsab.executablePathCS": "/var/www/.composer/vendor/bin/phpcs",
+                "phpsab.snifferArguments": [
+                    "--ignore=*/wp-admin/*,*/wp-includes/*"
+                ]
+            },
+            "extensions": [
+                "GitHub.copilot",
+                "xdebug.php-pack",
+                "ValeryanM.vscode-phpsab",
+                "wordpresstoolbox.wordpress-toolbox",
+                "johnbillion.vscode-wordpress-hooks"
+            ]
+        }
+    },
+    "settings": {
+        "launch": {
+            "version": "0.2.0",
+            "configurations": [
+                {
+                    "name": "Listen for Xdebug",
+                    "type": "php",
+                    "request": "launch",
+                    "port": 9003
+                },
+                {
+                    "name": "Launch currently open script",
+                    "type": "php",
+                    "request": "launch",
+                    "program": "${file}",
+                    "cwd": "${fileDirname}",
+                    "port": 0,
+                    "runtimeArgs": [
+                        "-dxdebug.start_with_request=yes"
+                    ],
+                    "env": {
+                        "XDEBUG_MODE": "debug,develop",
+                        "XDEBUG_CONFIG": "client_port=${port}"
+                    }
+                }
+            ]
+        },
+        "tasks": {
+            "version": "2.0.0",
+            "tasks": [
+                {
+                    "isTestCommand": true,
+                    "label": "Run test",
+                    "type": "shell",
+                    "command": "bash /var/www/html/.workspace/.devcontainer/run-test.sh",
+                    "group": {
+                        "kind": "test",
+                        "isDefault": true
+                    },
+                    "isBackground": true
+                }
+            ]
+        }
+    },
+    "postCreateCommand": ["bash", "/var/www/html/.workspace/.devcontainer/devcontainer-created.sh"],
+    "remoteUser": "www-data"
+}

@@ -1,0 +1,62 @@
+services:
+
+  mysql:
+    extends:
+      file: common.yml
+      service: mysql
+
+
+  selenium:
+    extends:
+      file: common.yml
+      service: selenium
+
+
+  wordpress:
+    extends:
+      file: common.yml
+      service: wordpress
+    volumes:
+      - "/var/www/html/.workspace:/var/www/html/.workspace:ro"
+      - "/var/www/html/wp-content/plugins:/var/www/html/wp-content/plugins:ro"
+      - "/var/www/html/wp-content/themes:/var/www/html/wp-content/themes:ro"
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_SETUP_SCRIPT: ${TEST_WORDPRESS_SETUP_SCRIPT}
+
+
+  php:
+    build:
+      args:
+        TAG: 8.0-cli
+      dockerfile_inline: |+
+        ARG TAG=8.0-cli
+        FROM php:$${TAG}
+        RUN apt-get update; \
+            apt-get install -yq git unzip mariadb-client
+        RUN curl -sL https://getcomposer.org/installer | php; \
+            mv composer.phar /usr/local/bin/composer; \
+            mkdir /var/www/.composer; \
+            chown www-data:www-data /var/www/.composer
+        ENV PATH="/root/.composer/vendor/bin/:${PATH}"
+        RUN curl -sL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o wp; \
+            chmod +x wp; \
+            mv wp /usr/local/bin/
+    depends_on:
+      selenium:
+        condition: service_healthy
+      wordpress:
+        condition: service_healthy
+    volumes:
+      - "/var/www/html/.workspace:/var/www/html/.workspace:ro"
+    stdin_open: true
+    tty: true
+    working_dir: /var/www/html/.workspace
+    command: [ "exit", "1" ]
+    networks:
+      - wordpress
+
+
+networks:
+  wordpress:
