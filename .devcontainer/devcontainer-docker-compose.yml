@@ -12,6 +12,7 @@ services:
       service: wordpress
     volumes:
       - "..:/var/www/html/.workspace"
+      - "../.vscode:/var/www/html/.vscode"
     environment:
       PAGER: cat
       WORDPRESS_DEBUG: "yes"
