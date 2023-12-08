@@ -1,3 +1,6 @@
 services:
+  # wordpress:
+  #   environment:
+  #     WORDPRESS_SETUP_SCRIPT: "/var/www/html/.workspace/PATH/TO/SETUP_SCRIPT.sh"
   # php:
   #   command: ["bash", "/var/www/html/.workspace/src/tests/YOUR_TEST.sh"]

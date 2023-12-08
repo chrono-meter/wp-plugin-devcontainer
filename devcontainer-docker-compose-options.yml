@@ -1,4 +1,6 @@
 services:
   # wordpress:
+  #   environment:
+  #     WORDPRESS_SETUP_SCRIPT: "/var/www/html/.workspace/PATH/TO/SETUP_SCRIPT.sh"
   #   volumes:
   #     - "../src:/var/www/html/wp-content/plugins/YOUR_PLUGIN_SLUG"

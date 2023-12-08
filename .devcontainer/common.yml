@@ -56,7 +56,7 @@ services:
       WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME:-wordpress}
       WORDPRESS_DB_USER: ${WORDPRESS_DB_USER:-wordpress}
       WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD:-wordpress}
-      # WORDPRESS_SETUP_SCRIPT: ${TEST_WORDPRESS_SETUP_SCRIPT}
+      # WORDPRESS_SETUP_SCRIPT: "/var/www/html/.workspace/PATH/TO/SETUP_SCRIPT.sh"
       WORDPRESS_CONFIG_EXTRA: |+
         // AT FIRST, define debug settings.
         error_reporting( E_ALL & ~E_NOTICE );
@@ -68,10 +68,10 @@ services:
         require_once '/var/www/html/.workspace/.devcontainer/utils/wpcli-role-import-export.php';
       # WORDPRESS_DEBUG: "yes"  # optional, default: no
       # WORDPRESS_INSTALL_TITLE: "WordPress in devcontainer"  # optional, default: WordPress in docker
-      #WORDPRESS_INSTALL_ADMIN_USER: "admin"  # optional, default: admin
-      #WORDPRESS_INSTALL_ADMIN_PASSWORD: "password"  # optional, default: password
-      #WORDPRESS_INSTALL_ADMIN_EMAIL: "admin@wordpress.local"  # optional, default: admin@wordpress.local
-      #WORDPRESS_LOCALE: "en_US"  # optional, default: en_US
+      # WORDPRESS_INSTALL_ADMIN_USER: "admin"  # optional, default: admin
+      # WORDPRESS_INSTALL_ADMIN_PASSWORD: "password"  # optional, default: password
+      # WORDPRESS_INSTALL_ADMIN_EMAIL: "admin@wordpress.local"  # optional, default: admin@wordpress.local
+      # WORDPRESS_LOCALE: "en_US"  # optional, default: en_US
     networks:
       - wordpress
     depends_on:
