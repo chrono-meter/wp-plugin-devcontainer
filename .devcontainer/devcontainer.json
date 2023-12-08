@@ -14,9 +14,7 @@
     ],
     "portsAttributes": {
         "wordpress:80": {"label": "WordPress"},
-        "9003": {"label": "Xdebug"},
-        "4444": {"label": "Selenium in docker"},
-        "8080": {"label": "WordPress in docker"}
+        "9003": {"label": "Xdebug"}
     },
     "workspaceFolder": "/var/www/html",
     "customizations": {

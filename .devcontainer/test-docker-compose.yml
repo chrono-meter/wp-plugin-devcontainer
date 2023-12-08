@@ -20,10 +20,6 @@ services:
       - "/var/www/html/.workspace:/var/www/html/.workspace:ro"
       - "/var/www/html/wp-content/plugins:/var/www/html/wp-content/plugins:ro"
       - "/var/www/html/wp-content/themes:/var/www/html/wp-content/themes:ro"
-    ports:
-      - "8080:80"
-    environment:
-      WORDPRESS_SETUP_SCRIPT: ${TEST_WORDPRESS_SETUP_SCRIPT}
 
 
   php:

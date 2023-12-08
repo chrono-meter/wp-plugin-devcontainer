@@ -24,16 +24,12 @@ services:
   # http://localhost:4444 --> Sessions --> Recording icon like 📹--> LiveView with password "secret"
   selenium:
     image: selenium/standalone-chrome
-    environment:
-      LANGUAGE: ja_JP.UTF-8
     healthcheck:
       test: /opt/bin/check-grid.sh --host 0.0.0.0 --port 4444
       interval: 15s
       timeout: 30s
       retries: 5
     shm_size: 2g
-    ports:
-      - "4444:4444"
     networks:
       - wordpress
 
