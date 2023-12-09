@@ -1,6 +1,25 @@
 services:
+  # NOTE "." means ".devcontainer", NOT this file's parent directory.
+  # NOTE Without persistent storage, rebuilding dev container will be drop any changes on non host mounted directory.
+
   # wordpress:
   #   environment:
   #     WORDPRESS_SETUP_SCRIPT: "/var/www/html/.workspace/PATH/TO/SETUP_SCRIPT.sh"
   #   volumes:
+  #     # persistent storage
+  #     - "../wp-content:/var/www/html/wp-content"
+  #     # REQUIRED. mount your plugin
   #     - "../src:/var/www/html/wp-content/plugins/YOUR_PLUGIN_SLUG"
+
+  # mysql:
+  #   volumes:
+  #       # persistent storage
+  #     - "../mysql:/var/lib/mysql"
+
+  # Note Be aware of increased resource consumption.
+  # selenium:
+  #   extends:
+  #     file: .devcontainer/common.yml
+  #     service: selenium
+  #   ports:
+  #     - "4444:4444"

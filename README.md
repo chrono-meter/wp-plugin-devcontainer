@@ -22,9 +22,10 @@ A simple dev container template for WordPress plugin development.
 
  2. Clone this repository.
  3. Open cloned folder in Visual Studio Code.
- 4. mkdir `src`
- 5. Edit [devcontainer-docker-compose-options.yml](devcontainer-docker-compose-options.yml), and edit [test-docker-compose-options.yml](test-docker-compose-options.yml).
- 6. Run `Dev Containers: Open Folder in Container...` in Command Palette.
+ 4. Edit [devcontainer-docker-compose-options.yml](devcontainer-docker-compose-options.yml), and edit [test-docker-compose-options.yml](test-docker-compose-options.yml).
+ 5. Open dev container: `Ctrl+Shift+P` (Command pallete) → `Dev Containers: Open Folder in Container...`.
+ 6. Open WordPress via forward port: `Ctrl+Shift+P` (Command pallete) → `Forward a Ports` →
+ 7. Login into WordPress. Default username is `admin`, password is `password` (If not set by environment variable).
 
 
 # Dev container settings
@@ -64,10 +65,14 @@ This container execute following steps on startup:
 
 
 ## Tips
- * Enter console: `Ctrl+Shift+@`
+ * Enter dev container console (shell): `Shift+Esc` or `Ctrl+Shift+@` (new console)
  * Forward a Ports: `Ctrl+Shift+P` (Command pallet) → `Forward a Ports`
- * Exit/Reopen/Rebuild dev container: `Ctrl+Shift+P` (Command pallet) → ![img](doc/vscode-cp-reopen.png)
+ * Exit/Reopen/Rebuild dev container: `Ctrl+Shift+P` (Command pallet) → type `reopen` ![img](doc/vscode-cp-reopen.png)
+ * Select and run task: `Shift+Alt+F10` → Select task
  * Run test: `Ctrl+Shift+P` (Command pallet) → `Tasks: Run Test Task`
+ * Run build tasks: `Ctrl+F9`
+ * [Find your favorite key bindings.](https://marketplace.visualstudio.com/search?target=VSCode&category=Keymaps&sortBy=Installs)
+ * Reload apache (if you don't want to restart dev container): Run `/etc/init.d/apache2 reload` in dev container's console
 
 ### Xdebug
  1. Bookmark `javascript:(function() {document.cookie='XDEBUG_TRIGGER='+'VSCODE'+';path=/;';document.location.reload();setTimeout(function() {document.cookie='XDEBUG_TRIGGER='+''+';expires=Mon, 05 Jul 2000 00:00:00 GMT;path=/;';}, 100);})()`

@@ -1,10 +1,14 @@
 {
     "name": "WordPress plugin development",
-    "dockerComposeFile": ["devcontainer-docker-compose.yml", "../devcontainer-docker-compose-options.yml"],
+    "dockerComposeFile": [
+        "devcontainer-docker-compose.yml",
+        "../devcontainer-docker-compose-options.yml"
+    ],
     "service": "wordpress",
     "features": {
         // https://github.com/devcontainers/features/tree/main/src/docker-in-docker
         "ghcr.io/devcontainers/features/docker-in-docker:2": {
+            // for use newer version of docker-ce
             "moby": false,
             "dockerDashComposeVersion": "v2"
         }
@@ -13,8 +17,12 @@
         "wordpress:80"
     ],
     "portsAttributes": {
-        "wordpress:80": {"label": "WordPress"},
-        "9003": {"label": "Xdebug"}
+        "wordpress:80": {
+            "label": "WordPress"
+        },
+        "9003": {
+            "label": "Xdebug"
+        }
     },
     "workspaceFolder": "/var/www/html",
     "customizations": {
@@ -22,8 +30,10 @@
             "settings": {
                 "terminal.integrated.shell.linux": "/bin/bash",
                 "php.suggest.basic": false, // avoids duplicate autocomplete
+                // for searching composer's vendor or else...
                 "search.useIgnoreFiles": false,
                 "[php]": {
+                    // for select PHP style variable name https://stackoverflow.com/a/58397556
                     "editor.wordSeparators": "`~!@#%^&*()-=+[{]}\\|;:'\",.<>/?"
                 },
                 // ms-azuretools.vscode-docker
@@ -59,11 +69,11 @@
                 ]
             },
             "extensions": [
-                "GitHub.copilot",
                 "xdebug.php-pack",
                 "ValeryanM.vscode-phpsab",
                 "wordpresstoolbox.wordpress-toolbox",
-                "johnbillion.vscode-wordpress-hooks"
+                "johnbillion.vscode-wordpress-hooks",
+                "rioj7.command-variable"
             ]
         }
     },
@@ -107,10 +117,60 @@
                         "isDefault": true
                     },
                     "isBackground": true
+                },
+                {
+                    "label": "Update WordPress (core, db, all plugins, all themes)",
+                    "type": "shell",
+                    "command": "wp core update && wp core update-db ; wp plugin update --all ; wp theme update --all",
+                    "group": {
+                        "kind": "build",
+                        "isDefault": false
+                    },
+                    "options": {
+                        "cwd": "/var/www/html"
+                    }
+                },
+                {
+                    "label": "Export database",
+                    "type": "shell",
+                    "command": "wp db export --add-drop-table",
+                    "group": {
+                        "kind": "build",
+                        "isDefault": false
+                    },
+                    "options": {
+                        "cwd": "/var/www/html"
+                    }
+                },
+                {
+                    "label": "Import database",
+                    "type": "shell",
+                    "command": "echo wp db import ${input:importSqlFile}",
+                    "group": {
+                        "kind": "build",
+                        "isDefault": false
+                    },
+                    "options": {
+                        "cwd": "/var/www/html"
+                    }
                 }
+                // todo Update pot/po files (generic)
             ]
-        }
+        },
+        "inputs": [
+            {
+                "id": "importSqlFile",
+                "type": "command",
+                "command": "extension.commandvariable.file.pickFile",
+                "args": {
+                    "include": "**/*.sql"
+                }
+            }
+        ]
     },
-    "postCreateCommand": ["bash", "/var/www/html/.workspace/.devcontainer/devcontainer-created.sh"],
+    "postCreateCommand": [
+        "bash",
+        "/var/www/html/.workspace/.devcontainer/devcontainer-created.sh"
+    ],
     "remoteUser": "www-data"
 }

@@ -45,7 +45,9 @@ RUN curl -sL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cl
     chmod +x wp; \
     mv wp /usr/local/bin/; \
     mkdir /var/www/.wp-cli; \
-    chown www-data:www-data /var/www/.wp-cli
+    chown www-data:www-data /var/www/.wp-cli; \
+    mkdir -p /etc/bash_completion.d; \
+    curl -sL https://raw.githubusercontent.com/wp-cli/wp-cli/v2.9.0/utils/wp-completion.bash -o /etc/bash_completion.d/wp-completion.bash
 
 
 #
