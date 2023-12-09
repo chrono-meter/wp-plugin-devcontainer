@@ -3,6 +3,10 @@ A simple dev container template for WordPress plugin development.
 
 
 # How to use
+
+> [!IMPORTANT]
+> Strongly recommend: if you use Linux, your `uid` should be `1000`. Else docker may cause permission problems.
+
  1. Install requirements:
     * [Visual Studio Code](https://code.visualstudio.com/)
     * [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
@@ -24,7 +28,7 @@ A simple dev container template for WordPress plugin development.
  3. Open cloned folder in Visual Studio Code.
  4. Edit [devcontainer-docker-compose-options.yml](devcontainer-docker-compose-options.yml), and edit [test-docker-compose-options.yml](test-docker-compose-options.yml).
  5. Open dev container: `Ctrl+Shift+P` (Command pallete) → `Dev Containers: Open Folder in Container...`.
- 6. Open WordPress via forward port: `Ctrl+Shift+P` (Command pallete) → `Forward a Ports` →
+ 6. Open WordPress via forward port: `Ctrl+Shift+P` (Command pallete) → `Forward a Ports` → `WordPress (80)` → open link in `Forwarded Address` column ![img](doc/vscode-open-forward-port.png)
  7. Login into WordPress. Default username is `admin`, password is `password` (If not set by environment variable).
 
 
@@ -43,6 +47,9 @@ This container execute following steps on startup:
     5. `wp core download` like operation.
     6. Set default user as `www-data`.
     7. Set default directory as `/var/www/html`.
+    8. Install Xdebug.
+    9. Install `phpinfo()` file, location is `http://localhost:80/phpinfo.php`.
+    10. Install Adminer, location is `http://localhost:80/adminer.php`.
 
  2. Wait for MySQL ready.
 
@@ -59,9 +66,8 @@ This container execute following steps on startup:
     * [docker-entrypoint.sh](https://github.com/docker-library/wordpress/blob/master/docker-entrypoint.sh)
     * [wp-config-docker.php](https://github.com/docker-library/wordpress/blob/master/wp-config-docker.php)
  * [.devcontainer/devcontainer.json](.devcontainer/devcontainer.json)
- * `wordpress` service in [.devcontainer/common.yml](.devcontainer/common.yml)
+ * `devcontainer` service in [.devcontainer/common.yml](.devcontainer/common.yml)
  * [.devcontainer/devcontainer-docker-compose.yml](.devcontainer/devcontainer-docker-compose.yml)
- * [.devcontainer/devcontainer-created.sh](.devcontainer/devcontainer-created.sh) (call at dev container's postCreateCommand)
 
 
 ## Tips
