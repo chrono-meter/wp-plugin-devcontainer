@@ -5,13 +5,16 @@
         "../devcontainer-docker-compose-options.yml"
     ],
     "service": "wordpress",
+    // https://containers.dev/features
     "features": {
         // https://github.com/devcontainers/features/tree/main/src/docker-in-docker
         "ghcr.io/devcontainers/features/docker-in-docker:2": {
             // for use newer version of docker-ce
             "moby": false,
             "dockerDashComposeVersion": "v2"
-        }
+        },
+        // https://github.com/devcontainers/features/tree/main/src/git
+        "ghcr.io/devcontainers/features/git:1": {},
     },
     "forwardPorts": [
         "wordpress:80"
@@ -104,6 +107,9 @@
                 }
             ]
         },
+        // https://code.visualstudio.com/docs/editor/tasks-appendix
+        // https://code.visualstudio.com/docs/editor/variables-reference
+        // https://marketplace.visualstudio.com/items?itemName=rioj7.command-variable
         "tasks": {
             "version": "2.0.0",
             "tasks": [
@@ -145,7 +151,7 @@
                 {
                     "label": "Import database",
                     "type": "shell",
-                    "command": "echo wp db import ${input:importSqlFile}",
+                    "command": "wp db import ${input:importSqlFile}",
                     "group": {
                         "kind": "build",
                         "isDefault": false

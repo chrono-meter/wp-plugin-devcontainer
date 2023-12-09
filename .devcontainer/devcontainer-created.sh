@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-sudo apt-get update; \
-    sudo apt-get install -yq bash git unzip mariadb-client
-
 sudo pecl install xdebug; \
     { \
         echo 'xdebug.idekey=VSCODE'; \
@@ -17,8 +14,6 @@ sudo pecl install xdebug; \
 
 composer global config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true; \
     composer global require --dev wp-coding-standards/wpcs; \
-    composer global require --dev phpunit/phpunit ^9; \
-    composer global require --dev php-webdriver/webdriver; \
     echo "<?php phpinfo();" > phpinfo.php; \
     curl https://www.adminer.org/latest-mysql-en.php --silent --location > adminer-mysql-en.php; \
     { \
