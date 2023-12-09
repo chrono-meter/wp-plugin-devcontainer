@@ -2,7 +2,7 @@ services:
   # NOTE "." means ".devcontainer", NOT this file's parent directory.
   # NOTE Without persistent storage, rebuilding dev container will be drop any changes on non host mounted directory.
 
-  # wordpress:
+  # devcontainer:
   #   environment:
   #     WORDPRESS_SETUP_SCRIPT: "/var/www/html/.workspace/PATH/TO/SETUP_SCRIPT.sh"
   #   volumes:

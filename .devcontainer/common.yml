@@ -39,14 +39,9 @@ services:
     build:
       context: .
       dockerfile: wordpress-base.Dockerfile
+      target: wordpress-base
       # args:
       #   TAG: php8.1
-    healthcheck:
-      test: bash -c "[ -f /var/www/wp-setup.complete ]"
-      start_period: 30s
-      interval: 5s
-      timeout: 5s
-      retries: 55
     environment:
       WORDPRESS_DB_HOST: mysql
       WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME:-wordpress}
@@ -62,6 +57,31 @@ services:
         require_once '/var/www/html/.workspace/.devcontainer/utils/mail-fetcher.php';
         require_once '/var/www/html/.workspace/.devcontainer/utils/prevent-sendmail.php';
         require_once '/var/www/html/.workspace/.devcontainer/utils/wpcli-role-import-export.php';
+      # WORDPRESS_DEBUG: "yes"  # optional, default: no
+      # WORDPRESS_INSTALL_TITLE: "WordPress in devcontainer"  # optional, default: WordPress in docker
+      # WORDPRESS_INSTALL_ADMIN_USER: "admin"  # optional, default: admin
+      # WORDPRESS_INSTALL_ADMIN_PASSWORD: "password"  # optional, default: password
+      # WORDPRESS_INSTALL_ADMIN_EMAIL: "admin@wordpress.local"  # optional, default: admin@wordpress.local
+      # WORDPRESS_LOCALE: "en_US"  # optional, default: en_US
+    networks:
+      - wordpress
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  devcontainer:
+    build:
+      context: .
+      dockerfile: wordpress-base.Dockerfile
+      target: devcontainer
+      # args:
+      #   TAG: php8.1
+    environment:
+      WORDPRESS_DB_HOST: mysql
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME:-wordpress}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER:-wordpress}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD:-wordpress}
+      # WORDPRESS_SETUP_SCRIPT: "/var/www/html/.workspace/PATH/TO/SETUP_SCRIPT.sh"
       # WORDPRESS_DEBUG: "yes"  # optional, default: no
       # WORDPRESS_INSTALL_TITLE: "WordPress in devcontainer"  # optional, default: WordPress in docker
       # WORDPRESS_INSTALL_ADMIN_USER: "admin"  # optional, default: admin

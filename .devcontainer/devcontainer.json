@@ -4,7 +4,7 @@
         "devcontainer-docker-compose.yml",
         "../devcontainer-docker-compose-options.yml"
     ],
-    "service": "wordpress",
+    "service": "devcontainer",
     // https://containers.dev/features
     "features": {
         // https://github.com/devcontainers/features/tree/main/src/docker-in-docker
@@ -17,13 +17,13 @@
         "ghcr.io/devcontainers/features/git:1": {},
     },
     "forwardPorts": [
-        "wordpress:80"
+        80
     ],
     "portsAttributes": {
-        "wordpress:80": {
+        "localhost:80": {
             "label": "WordPress"
         },
-        "9003": {
+        "localhost:9003": {
             "label": "Xdebug"
         }
     },
@@ -174,9 +174,5 @@
             }
         ]
     },
-    "postCreateCommand": [
-        "bash",
-        "/var/www/html/.workspace/.devcontainer/devcontainer-created.sh"
-    ],
     "remoteUser": "www-data"
 }
