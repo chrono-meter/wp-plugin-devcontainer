@@ -26,7 +26,7 @@ A simple dev container template for WordPress plugin development.
 
  2. Clone this repository.
  3. Open cloned folder in Visual Studio Code.
- 4. Edit [devcontainer-docker-compose-options.yml](devcontainer-docker-compose-options.yml), and edit [test-docker-compose-options.yml](test-docker-compose-options.yml).
+ 4. Edit [devcontainer-docker-compose-options.yml](../devcontainer-docker-compose-options.yml), and edit [test-docker-compose-options.yml](../test-docker-compose-options.yml).
  5. Open dev container: `Ctrl+Shift+P` (Command pallete) → `Dev Containers: Open Folder in Container...`.
  6. Open WordPress via forward port: `Ctrl+Shift+P` (Command pallete) → `Forward a Ports` → `WordPress (80)` → open link in `Forwarded Address` column ![img](doc/vscode-open-forward-port.png)
  7. Login into WordPress. Default username is `admin`, password is `password` (If not set by environment variable).
@@ -38,7 +38,7 @@ Dev container is inherited from [WordPress official image](https://hub.docker.co
 
 This container execute following steps on startup:
 
- 1. Build image. See [.devcontainer/wordpress-base.Dockerfile](.devcontainer/wordpress-base.Dockerfile).
+ 1. Build image. See [.devcontainer/wordpress-base.Dockerfile](wordpress-base.Dockerfile).
 
     1. Configure user settings for www-data console operation.
     2. Configure "php.ini".
@@ -65,9 +65,9 @@ This container execute following steps on startup:
     * [Environment variables](https://hub.docker.com/_/wordpress#:~:text=How%20to%20use%20this%20image)
     * [docker-entrypoint.sh](https://github.com/docker-library/wordpress/blob/master/docker-entrypoint.sh)
     * [wp-config-docker.php](https://github.com/docker-library/wordpress/blob/master/wp-config-docker.php)
- * [.devcontainer/devcontainer.json](.devcontainer/devcontainer.json)
- * `devcontainer` service in [.devcontainer/common.yml](.devcontainer/common.yml)
- * [.devcontainer/devcontainer-docker-compose.yml](.devcontainer/devcontainer-docker-compose.yml)
+ * [.devcontainer/devcontainer.json](devcontainer.json)
+ * `devcontainer` service in [.devcontainer/common.yml](common.yml)
+ * [.devcontainer/devcontainer-docker-compose.yml](devcontainer-docker-compose.yml)
 
 
 ## Tips
@@ -89,7 +89,7 @@ This container execute following steps on startup:
 
 
 # todo: Test envinronment settings
- * [.devcontainer/run-test.sh](.devcontainer/run-test.sh)
- * [test-docker-compose-options.yml](test-docker-compose-options.yml)
- * [.devcontainer/test-docker-compose.yml](.devcontainer/test-docker-compose.yml)
- * [.devcontainer/common.yml](.devcontainer/common.yml)
+ * [.devcontainer/run-test.sh](run-test.sh)
+ * [test-docker-compose-options.yml](../test-docker-compose-options.yml)
+ * [.devcontainer/test-docker-compose.yml](test-docker-compose.yml)
+ * [.devcontainer/common.yml](common.yml)
