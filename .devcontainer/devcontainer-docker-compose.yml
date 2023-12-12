@@ -47,13 +47,6 @@ services:
         // https://wordpress.org/documentation/article/configuring-automatic-background-updates/
         defined( 'AUTOMATIC_UPDATER_DISABLED' ) || define( 'AUTOMATIC_UPDATER_DISABLED', true );
 
-        defined( 'ALLOW_UNFILTERED_UPLOADS' ) || define( 'ALLOW_UNFILTERED_UPLOADS', true );
-
-        $$GLOBALS['wp_filter']['init'][10][] = [
-          'accepted_args' => 0,
-          'function'      => fn () => wp_deregister_script( 'heartbeat' ),
-        ];
-
         /** @see \QM_Collector_PHP_Errors::set_up() */
         defined( 'QM_DISABLE_ERROR_HANDLER' ) || define( 'QM_DISABLE_ERROR_HANDLER', true );
         defined( 'QM_DARK_MODE' ) || define( 'QM_DARK_MODE', true );

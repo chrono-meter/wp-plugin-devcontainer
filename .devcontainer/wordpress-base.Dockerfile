@@ -12,6 +12,7 @@ RUN usermod --shell /bin/bash www-data; \
     apt-get update; \
     apt-get install -yq sudo bash-completion unzip mariadb-client; \
     rm -rf /var/lib/apt/lists/*; \
+    mkdir -p /etc/bash_completion.d; \
     echo 'www-data ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 
@@ -33,7 +34,8 @@ RUN printf "upload_max_filesize=0\npost_max_size=1024M" >> $PHP_INI_DIR/conf.d/w
 RUN curl -sL https://getcomposer.org/installer | php; \
     mv composer.phar /usr/local/bin/composer; \
     mkdir /var/www/.composer; \
-    chown www-data:www-data /var/www/.composer
+    chown www-data:www-data /var/www/.composer; \
+    curl -sL "https://github.com/bramus/composer-autocomplete/raw/master/composer-autocomplete" -o /etc/bash_completion.d/composer-autocomplete
 ENV PATH="/var/www/.composer/vendor/bin:${PATH}"
 
 
@@ -47,8 +49,7 @@ RUN curl -sL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cl
     mv wp /usr/local/bin/; \
     mkdir /var/www/.wp-cli; \
     chown www-data:www-data /var/www/.wp-cli; \
-    mkdir -p /etc/bash_completion.d; \
-    curl -sL https://raw.githubusercontent.com/wp-cli/wp-cli/v2.9.0/utils/wp-completion.bash -o /etc/bash_completion.d/wp-completion.bash
+    curl -sL "https://raw.githubusercontent.com/wp-cli/wp-cli/v2.9.0/utils/wp-completion.bash" -o /etc/bash_completion.d/wp-completion.bash
 
 
 #
