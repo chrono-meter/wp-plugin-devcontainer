@@ -6,6 +6,12 @@ services:
       service: mysql
 
 
+  mailhog:
+    extends:
+      file: common.yml
+      service: mailhog
+
+
   selenium:
     extends:
       file: common.yml

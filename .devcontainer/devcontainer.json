@@ -17,7 +17,8 @@
         "ghcr.io/devcontainers/features/git:1": {},
     },
     "forwardPorts": [
-        80
+        80,
+        "mailhog:8025"
     ],
     "portsAttributes": {
         "localhost:80": {
@@ -25,6 +26,9 @@
         },
         "localhost:9003": {
             "label": "Xdebug"
+        },
+        "mailhog:8025": {
+            "label": "MailHog"
         }
     },
     "workspaceFolder": "/var/www/html",

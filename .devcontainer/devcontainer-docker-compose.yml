@@ -6,6 +6,12 @@ services:
       service: mysql
 
 
+  mailhog:
+    extends:
+      file: common.yml
+      service: mailhog
+
+
   devcontainer:
     extends:
       file: common.yml
@@ -15,20 +21,24 @@ services:
       - "../.vscode:/var/www/html/.vscode"
     environment:
       PAGER: cat
+      PHPINI_error_reporting: "E_ALL"
+      PHPINI_display_startup_errors: "On"
+      PHPINI_display_errors: "On"
       WORDPRESS_DEBUG: "yes"
       WORDPRESS_INSTALL_TITLE: "WordPress in devcontainer"
+      WORDPRESS_CONST_WP_ENVIRONMENT_TYPE: "development"
+      WORDPRESS_CONST_WP_DEVELOPMENT_MODE: "plugin"
+      WORDPRESS_CONST_WP_DEBUG_LOG: 1
+      WORDPRESS_CONST_WP_DEBUG_DISPLAY: 1
+      WORDPRESS_CONST_WP_DISABLE_FATAL_ERROR_HANDLER: 1
+      WORDPRESS_CONST_SCRIPT_DEBUG: 1
+      WORDPRESS_CONST_SAVEQUERIES: 1
+      WORDPRESS_CONST_QM_DISABLE_ERROR_HANDLER: 1  # https://github.com/johnbillion/query-monitor/blob/0741b15ea0bc05dc9b6fd71af246cf83cbc45f33/collectors/php_errors.php#L75
+      WORDPRESS_CONST_QM_DARK_MODE: 1
+      WORDPRESS_CONST_QM_ENABLE_CAPS_PANEL: 1
       WORDPRESS_CONFIG_EXTRA: |+
-        // AT FIRST, define debug settings.
-        error_reporting( E_ALL );
-        @ini_set( 'display_errors', 1 );
+        require_once '/var/www/html/.workspace/.devcontainer/wp-config-injection.php';
 
-        defined( 'WP_ENVIRONMENT_TYPE' ) || define( 'WP_ENVIRONMENT_TYPE', 'development' );
-        defined( 'WP_DEVELOPMENT_MODE' ) || define( 'WP_DEVELOPMENT_MODE', 'plugin' );
-        defined( 'WP_DEBUG_LOG' ) || define( 'WP_DEBUG_LOG', true );
-        defined( 'WP_DEBUG_DISPLAY' ) || define( 'WP_DEBUG_DISPLAY', true );
-        defined( 'WP_DISABLE_FATAL_ERROR_HANDLER' ) || define( 'WP_DISABLE_FATAL_ERROR_HANDLER', true );
-        defined( 'SCRIPT_DEBUG' ) || define( 'SCRIPT_DEBUG', true );
-        defined( 'SAVEQUERIES' ) || define( 'SAVEQUERIES', true );
         $$GLOBALS['wp_filter']['wp_php_error_message'][10][] = [
           'accepted_args' => 2,
           'function'      => function ( $$message, $$error ) {
@@ -36,21 +46,7 @@ services:
           },
         ];
 
-        require_once '/var/www/html/.workspace/.devcontainer/utils/spoofing-hostport.php';
-        require_once '/var/www/html/.workspace/.devcontainer/utils/wpcli-role-import-export.php';
-
-        $$GLOBALS['wp_filter']['wp_mail_from'][10][] = [
-          'accepted_args' => 0,
-          'function'      => fn () => 'noreply@wordpress.local',
-        ];
-
-        // https://wordpress.org/documentation/article/configuring-automatic-background-updates/
-        defined( 'AUTOMATIC_UPDATER_DISABLED' ) || define( 'AUTOMATIC_UPDATER_DISABLED', true );
-
-        /** @see \QM_Collector_PHP_Errors::set_up() */
-        defined( 'QM_DISABLE_ERROR_HANDLER' ) || define( 'QM_DISABLE_ERROR_HANDLER', true );
-        defined( 'QM_DARK_MODE' ) || define( 'QM_DARK_MODE', true );
-        defined( 'QM_ENABLE_CAPS_PANEL' ) || define( 'QM_ENABLE_CAPS_PANEL', true );
+        // Allow to any users to view Query Monitor.
         $$GLOBALS['wp_filter']['user_has_cap'][10][] = [
           'accepted_args' => 2,
           'function'      => function ( $$result, array $$caps ) {
