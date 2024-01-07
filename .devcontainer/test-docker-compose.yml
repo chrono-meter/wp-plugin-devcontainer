@@ -37,6 +37,16 @@ services:
         FROM php:$${TAG}
         RUN apt-get update; \
             apt-get install -yq git unzip mariadb-client
+        RUN pecl install xdebug; \
+          { \
+              echo 'xdebug.idekey=VSCODE'; \
+              echo 'xdebug.mode=develop,debug'; \
+              #echo 'xdebug.start_with_request=trigger'; \
+              #echo 'xdebug.log=/tmp/xdebug.log'; \
+              echo 'xdebug.client_host=host.docker.internal'; \
+              #echo 'xdebug.client_port=9003'; \
+          } | tee $PHP_INI_DIR/conf.d/docker-php-ext-xdebug-config.ini; \
+          docker-php-ext-enable xdebug
         RUN curl -sL https://getcomposer.org/installer | php; \
             mv composer.phar /usr/local/bin/composer; \
             mkdir /var/www/.composer; \
@@ -58,6 +68,10 @@ services:
     command: [ "exit", "1" ]
     networks:
       - wordpress
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    # environment:
+    #   XDEBUG_TRIGGER: "1"
 
 
 networks:

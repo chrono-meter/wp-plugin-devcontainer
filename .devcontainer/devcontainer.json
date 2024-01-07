@@ -1,10 +1,12 @@
 {
-    "name": "WordPress plugin development",
+    "name": "${localWorkspaceFolderBasename}",
     "dockerComposeFile": [
         "devcontainer-docker-compose.yml",
         "../devcontainer-docker-compose-options.yml"
     ],
     "service": "devcontainer",
+    "workspaceFolder": "/var/www/html",
+    "remoteUser": "www-data",
     // https://containers.dev/features
     "features": {
         // https://github.com/devcontainers/features/tree/main/src/docker-in-docker
@@ -31,7 +33,6 @@
             "label": "MailHog"
         }
     },
-    "workspaceFolder": "/var/www/html",
     "customizations": {
         "vscode": {
             "settings": {
@@ -177,6 +178,5 @@
                 }
             }
         ]
-    },
-    "remoteUser": "www-data"
+    }
 }

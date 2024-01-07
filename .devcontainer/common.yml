@@ -11,7 +11,7 @@ services:
     # https://stackoverflow.com/a/54854239/3622941
     healthcheck:
       test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
-      start_period: 30s
+      start_period: 300s
       interval: 5s
       timeout: 5s
       retries: 55
@@ -27,7 +27,7 @@ services:
     healthcheck:
       test: /opt/bin/check-grid.sh --host 0.0.0.0 --port 4444
       interval: 15s
-      timeout: 30s
+      timeout: 300s
       retries: 5
     shm_size: 2g
     networks:
@@ -40,8 +40,6 @@ services:
     restart: always
     networks:
       - wordpress
-    # ports:
-    #   - "${MAILHOG_PORT:-8025}:8025"
 
 
   # https://hub.docker.com/_/wordpress
@@ -52,7 +50,7 @@ services:
       target: wordpress-base
       # args:
       #   TAG: php8.1
-    environment:
+    environment: &wordpress_environment
       WORDPRESS_DB_HOST: mysql
       WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME:-wordpress}
       WORDPRESS_DB_USER: ${WORDPRESS_DB_USER:-wordpress}
@@ -71,7 +69,7 @@ services:
       # PHPINI_name: "your value"
     networks:
       - wordpress
-    depends_on:
+    depends_on: &wordpress_depends_on
       mysql:
         condition: service_healthy
       mailhog:
@@ -84,23 +82,10 @@ services:
       target: devcontainer
       # args:
       #   TAG: php8.1
-    environment:
-      WORDPRESS_DB_HOST: mysql
-      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME:-wordpress}
-      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER:-wordpress}
-      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD:-wordpress}
-      # WORDPRESS_SETUP_SCRIPT: "/var/www/html/.workspace/PATH/TO/SETUP_SCRIPT.sh"
-      # WORDPRESS_DEBUG: "yes"  # optional, default: no
-      # WORDPRESS_INSTALL_TITLE: "WordPress in devcontainer"  # optional, default: WordPress in docker
-      # WORDPRESS_INSTALL_ADMIN_USER: "admin"  # optional, default: admin
-      # WORDPRESS_INSTALL_ADMIN_PASSWORD: "password"  # optional, default: password
-      # WORDPRESS_INSTALL_ADMIN_EMAIL: "admin@wordpress.local"  # optional, default: admin@wordpress.local
-      # WORDPRESS_LOCALE: "en_US"  # optional, default: en_US
+    environment: *wordpress_environment
     networks:
       - wordpress
-    depends_on:
-      mysql:
-        condition: service_healthy
+    depends_on: *wordpress_depends_on
     # extra_hosts:
     #   # For debugging from host machine.
     #   - "host.docker.internal:host-gateway"

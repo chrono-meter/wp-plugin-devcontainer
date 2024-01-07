@@ -6,8 +6,12 @@ services:
   #     WORDPRESS_SETUP_SCRIPT: "/var/www/html/.workspace/PATH/TO/SETUP_SCRIPT.sh"
 
   # php:
+  #   environment:
+  #     XDEBUG_TRIGGER: "1"
   #   command: ["bash", "/var/www/html/.workspace/src/tests/YOUR_TEST.sh"]
 
   # selenium:
   #   environment:
   #     LANGUAGE: ja_JP.UTF-8
+  #   ports:
+  #     - "4444:4444"

@@ -10,9 +10,6 @@ services:
   #     - "../src:/var/www/html/wp-content/plugins/YOUR_PLUGIN_SLUG"
   #     # persistent storage
   #     - "../wp-content:/var/www/html/wp-content"
-  #     # share ssh and git config
-  #     - "~/.gitconfig:/var/www/.gitconfig:ro"
-  #     - "~/.ssh:/var/www/.ssh:ro"
 
   # mysql:
   #   volumes:
@@ -21,8 +18,7 @@ services:
 
   # NOTE Be aware of increased resource consumption.
   # selenium:
-  #   extends:
-  #     file: .devcontainer/common.yml
-  #     service: selenium
+  #   environment:
+  #     LANGUAGE: ja_JP.UTF-8
   #   ports:
   #     - "4444:4444"
