@@ -37,7 +37,6 @@ services:
   # https://github.com/mailhog/MailHog
   mailhog:
     image: mailhog/mailhog
-    restart: always
     networks:
       - wordpress
 
