@@ -20,11 +20,16 @@
     },
     "forwardPorts": [
         80,
+        443,
+        9003,
         "mailhog:8025"
     ],
     "portsAttributes": {
         "localhost:80": {
             "label": "WordPress"
+        },
+        "localhost:443": {
+            "label": "WordPress (https)"
         },
         "localhost:9003": {
             "label": "Xdebug"

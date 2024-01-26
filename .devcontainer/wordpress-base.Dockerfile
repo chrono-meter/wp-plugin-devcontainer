@@ -17,6 +17,21 @@ RUN usermod --shell /bin/bash www-data; \
 
 
 #
+# Configure HTTPS
+#
+RUN openssl genrsa -out /var/www/ssl-cert-snakeoil.key 2048 && \
+    openssl req -new -subj "/C=/CN=localhost" -key /var/www/ssl-cert-snakeoil.key -out /var/www/ssl-cert-snakeoil.csr && \
+    echo "subjectAltName = DNS:localhost" > /var/www/san.txt && \
+    openssl x509 -req -days 365 -signkey /var/www/ssl-cert-snakeoil.key -in /var/www/ssl-cert-snakeoil.csr -extfile /var/www/san.txt -out /var/www/ssl-cert-snakeoil.pem && \
+    rm /var/www/ssl-cert-snakeoil.csr /var/www/san.txt && \
+    sed -i 's/SSLCertificateFile.*snakeoil\.pem/SSLCertificateFile \/var\/www\/ssl-cert-snakeoil.pem/g' /etc/apache2/sites-available/default-ssl.conf && \
+    sed -i 's/SSLCertificateKeyFile.*snakeoil\.key/SSLCertificateKeyFile \/var\/www\/ssl-cert-snakeoil.key/g' /etc/apache2/sites-available/default-ssl.conf && \
+    a2enmod ssl && \
+    a2enmod socache_shmcb && \
+    a2ensite default-ssl
+
+
+#
 # Configure php.ini
 #
 # @link https://www.php.net/manual/en/ini.core.php#ini.sect.file-uploads
