@@ -38,7 +38,8 @@ RUN openssl genrsa -out /var/www/ssl-cert-snakeoil.key 2048 && \
 # @link https://www.php.net/manual/en/info.configuration.php#ini.max-execution-time
 #
 RUN printf "upload_max_filesize=0\npost_max_size=1024M" >> $PHP_INI_DIR/conf.d/wordpress-file-uploads.ini; \
-    printf "max_execution_time=0" >> $PHP_INI_DIR/conf.d/wordpress-runtime.ini
+    printf "max_execution_time=0" >> $PHP_INI_DIR/conf.d/wordpress-runtime.ini; \
+    sed -i 's/opcache\.max_accelerated_files.*/opcache.max_accelerated_files=65535/g' $PHP_INI_DIR/conf.d/opcache-recommended.ini
 
 
 #

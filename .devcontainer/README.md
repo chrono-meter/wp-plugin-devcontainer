@@ -60,6 +60,15 @@ This container execute following steps on startup:
  5. Run shell script file for WordPress first installation. Set `$WORDPRESS_SETUP_SCRIPT` environment variable.
 
 
+## Mailhog
+
+Dev container's smtp environment is provided by [Mailhog](https://github.com/mailhog/MailHog).
+
+To see emails that sent from WordPress, `Ctrl+Shift+P` (Command pallet) → `Forward a Ports` → Find forwarded `8025` port and open it in your browser.
+
+To check emails in your test, use [MailHog API v1](https://github.com/mailhog/MailHog/blob/master/docs/APIv1.md) or [MailHog API v2](https://github.com/mailhog/MailHog/blob/master/docs/APIv2.md).
+
+
 ## References
  * WordPress Image
     * [Environment variables](https://hub.docker.com/_/wordpress#:~:text=How%20to%20use%20this%20image)
