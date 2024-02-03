@@ -24,8 +24,8 @@ A simple dev container template for WordPress plugin development.
        4. Connect to server.
        5. Recommended: Install [Docker for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker) in server.
 
- 2. Clone this repository.
- 3. Open cloned folder in Visual Studio Code.
+ 2. Clone this repository. `git clone https://github.com/chrono-meter/wp-plugin-devcontainer.git YOUR-PROJECT-NAME`
+ 3. Open cloned folder named `YOUR-PROJECT-NAME` in Visual Studio Code.
  4. Edit [devcontainer-docker-compose-options.yml](../devcontainer-docker-compose-options.yml), and edit [test-docker-compose-options.yml](../test-docker-compose-options.yml).
  5. Open dev container: `Ctrl+Shift+P` (Command pallete) → `Dev Containers: Open Folder in Container...`.
  6. Open WordPress via forward port: `Ctrl+Shift+P` (Command pallete) → `Forward a Ports` → `WordPress (80)` → open link in `Forwarded Address` column ![img](doc/vscode-open-forward-port.png)

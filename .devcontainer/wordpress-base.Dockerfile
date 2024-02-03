@@ -106,6 +106,7 @@ WORKDIR /var/www/html
 FROM wordpress-base AS devcontainer
 RUN sudo apt-get update; \
     sudo apt-get install -yq ssh-client
+RUN wp package install wp-cli/dist-archive-command:@stable
 RUN sudo pecl install xdebug; \
     { \
         echo 'xdebug.idekey=VSCODE'; \
