@@ -4,24 +4,29 @@ services:
     extends:
       file: common.yml
       service: mysql
-
+    networks:
+      - wordpress
 
   mailhog:
     extends:
       file: common.yml
       service: mailhog
-
+    networks:
+      - wordpress
 
   selenium:
     extends:
       file: common.yml
       service: selenium
-
+    networks:
+      - wordpress
 
   wordpress:
     extends:
       file: common.yml
       service: wordpress
+    networks:
+      - wordpress
     volumes:
       - "/var/www/html/.workspace:/var/www/html/.workspace:ro"
       - "/var/www/html/wp-content/plugins:/var/www/html/wp-content/plugins:ro"

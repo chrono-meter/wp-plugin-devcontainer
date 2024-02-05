@@ -4,18 +4,22 @@ services:
     extends:
       file: common.yml
       service: mysql
-
+    networks:
+      - wordpress
 
   mailhog:
     extends:
       file: common.yml
       service: mailhog
-
+    networks:
+      - wordpress
 
   devcontainer:
     extends:
       file: common.yml
       service: devcontainer
+    networks:
+      - wordpress
     volumes:
       - "..:/var/www/html/.workspace"
       - "../.vscode:/var/www/html/.vscode"
