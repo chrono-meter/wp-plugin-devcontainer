@@ -68,11 +68,6 @@ services:
       # PHPINI_name: "your value"
     networks:
       - wordpress
-    depends_on: &wordpress_depends_on
-      mysql:
-        condition: service_healthy
-      mailhog:
-        condition: service_started
 
   devcontainer:
     build:
@@ -84,7 +79,6 @@ services:
     environment: *wordpress_environment
     networks:
       - wordpress
-    depends_on: *wordpress_depends_on
     # extra_hosts:
     #   # For debugging from host machine.
     #   - "host.docker.internal:host-gateway"

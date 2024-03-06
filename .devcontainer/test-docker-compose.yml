@@ -27,6 +27,11 @@ services:
       service: wordpress
     networks:
       - wordpress
+    depends_on:
+      mysql:
+        condition: service_healthy
+      mailhog:
+        condition: service_started
     volumes:
       - "/var/www/html/.workspace:/var/www/html/.workspace:ro"
       - "/var/www/html/wp-content/plugins:/var/www/html/wp-content/plugins:ro"

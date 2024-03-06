@@ -20,6 +20,11 @@ services:
       service: devcontainer
     networks:
       - wordpress
+    depends_on:
+      mysql:
+        condition: service_healthy
+      mailhog:
+        condition: service_started
     volumes:
       - "..:/var/www/html/.workspace"
       - "../.vscode:/var/www/html/.vscode"
