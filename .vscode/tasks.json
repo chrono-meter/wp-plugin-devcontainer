@@ -1,0 +1,18 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        // Watch sass files changes and compile them to css. Uncomment the following code and replace YOUR_PLUGIN_NAME with the name of your plugin.
+        // {
+        //     "label": "SASS Watch",
+        //     "type": "shell",
+        //     "command": "which sass >/dev/null || (sudo apt-get update && sudo apt-get install -y npm && sudo npm install -g sass); sass --watch /var/www/html/wp-content/plugins/YOUR_PLUGIN_NAME",
+        //     "presentation": {
+        //         "reveal": "always",
+        //         "panel": "new"
+        //     },
+        //     "runOptions": {
+        //         "runOn": "folderOpen"
+        //     }
+        // }
+    ]
+}
