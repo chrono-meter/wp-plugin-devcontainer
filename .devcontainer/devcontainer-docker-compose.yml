@@ -35,8 +35,8 @@ services:
       PHPINI_display_errors: "On"
       WORDPRESS_DEBUG: "yes"
       WORDPRESS_INSTALL_TITLE: "WordPress in devcontainer"
-      WORDPRESS_CONST_WP_ENVIRONMENT_TYPE: "development"
-      WORDPRESS_CONST_WP_DEVELOPMENT_MODE: "plugin"
+      WORDPRESS_CONST_WP_ENVIRONMENT_TYPE: "development"  # https://make.wordpress.org/core/2020/08/27/wordpress-environment-types/
+      WORDPRESS_CONST_WP_DEVELOPMENT_MODE: "all"  # https://make.wordpress.org/core/2023/07/14/configuring-development-mode-in-6-3/
       WORDPRESS_CONST_WP_DEBUG_LOG: 1
       WORDPRESS_CONST_WP_DEBUG_DISPLAY: 1
       WORDPRESS_CONST_WP_DISABLE_FATAL_ERROR_HANDLER: 1
