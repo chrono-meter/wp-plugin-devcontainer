@@ -5,11 +5,11 @@
  */
 foreach ( $_ENV as $key => $value ) {
 	if ( strpos( $key, 'PHPINI_' ) === 0 ) {
-		$key = substr( $key, 7 );
+		$key = substr( $key, strlen( 'PHPINI_' ) );
 		ini_set( $key, $value );
 
 	} elseif ( strpos( $key, 'WORDPRESS_CONST_' ) === 0 ) {
-		$key = substr( $key, 17 );
+		$key = substr( $key, strlen( 'WORDPRESS_CONST_' ) );
 		defined( $key ) || define( $key, $value );
 	}
 }

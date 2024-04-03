@@ -1,6 +1,73 @@
 {
+    // https://code.visualstudio.com/docs/editor/tasks-appendix
+    // https://code.visualstudio.com/docs/editor/variables-reference
+    // https://marketplace.visualstudio.com/items?itemName=rioj7.command-variable
     "version": "2.0.0",
     "tasks": [
+        {
+            "label": "Run test",
+            "type": "shell",
+            "command": "bash /var/www/html/.workspace/.devcontainer/run-test.sh",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "isBackground": true
+        },
+        {
+            "label": "Update WordPress (core, db, all plugins, all themes)",
+            "type": "shell",
+            "command": "wp core update && wp core update-db ; wp plugin update --all ; wp theme update --all",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "options": {
+                "cwd": "/var/www/html"
+            }
+        },
+        {
+            "label": "Export database",
+            "type": "shell",
+            "command": "wp db export --add-drop-table",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "options": {
+                "cwd": "/var/www/html"
+            }
+        },
+        {
+            "label": "Import database",
+            "type": "shell",
+            "command": "wp db import ${input:importSqlFile}",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "options": {
+                "cwd": "/var/www/html"
+            }
+        },
+        {
+            "label": "Zip plugin",
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "command": "wp dist-archive ${input:selectPlugin}"
+        },
+        {
+            "label": "Zip theme",
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "command": "wp dist-archive ${input:selectTheme}"
+        },
         // Watch sass files changes and compile them to css. Uncomment the following code and replace YOUR_PLUGIN_NAME with the name of your plugin.
         // {
         //     "label": "SASS Watch",
@@ -13,6 +80,47 @@
         //     "runOptions": {
         //         "runOn": "folderOpen"
         //     }
-        // }
+        // },
+        // Update pot/po files. Uncomment the following code and change the cwd and the name of the pot file.
+        // {
+        //     "label": "Update pot/po files.",
+        //     "type": "shell",
+        //     "group": {
+        //         "kind": "build",
+        //         "isDefault": false
+        //     },
+        //     "command": "wp i18n make-pot . ./languages/YOUR_PLUGIN_NAME.pot && wp i18n update-po ./languages/YOUR_PLUGIN_NAME.pot",
+        //     "options": {
+        //         "cwd": "/var/www/html/wp-content/plugins/YOUR_PLUGIN_NAME"
+        //     }
+        // },
+    ],
+    "inputs": [
+        {
+            "id": "importSqlFile",
+            "type": "command",
+            "command": "extension.commandvariable.file.pickFile",
+            "args": {
+                "include": "**/*.sql"
+            }
+        },
+        {
+            "id": "selectPlugin",
+            "type": "command",
+            "command": "extension.commandvariable.file.openDialog",
+            "args": {
+                "canSelect": "folders",
+                "defaultUri": "/var/www/html/wp-content/plugins"
+            }
+        },
+        {
+            "id": "selectTheme",
+            "type": "command",
+            "command": "extension.commandvariable.file.openDialog",
+            "args": {
+                "canSelect": "folders",
+                "defaultUri": "/var/www/html/wp-content/themes"
+            }
+        }
     ]
 }
