@@ -96,6 +96,10 @@ To check emails in your test, use [MailHog API v1](https://github.com/mailhog/Ma
  4. Open WordPress page that you want to debug.
  5. Open bookmarked JavaScript.
 
+### Links
+ * https://wordpress.org/plugins/tags/debug/
+ * https://wordpress.org/plugins/tags/development/
+
 
 # todo: Test envinronment settings
  * [.devcontainer/run-test.sh](run-test.sh)

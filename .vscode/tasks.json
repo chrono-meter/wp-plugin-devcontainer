@@ -15,9 +15,9 @@
             "isBackground": true
         },
         {
-            "label": "Update WordPress (core, db, all plugins, all themes)",
+            "label": "Update WordPress (core, db, all plugins, all themes, all translations)",
             "type": "shell",
-            "command": "wp core update && wp core update-db ; wp plugin update --all ; wp theme update --all",
+            "command": "wp core update && wp core update-db ; wp plugin update --all ; wp theme update --all ; wp language core update ; wp language plugin update --all ; wp language theme update --all",
             "group": {
                 "kind": "build",
                 "isDefault": false
@@ -94,6 +94,18 @@
         //         "cwd": "/var/www/html/wp-content/plugins/YOUR_PLUGIN_NAME"
         //     }
         // },
+        {
+            "label": "PHP debeg.log",
+            "type": "shell",
+            "command": "[[ -v REMOTE_CONTAINERS ]] && tail -f /var/www/html/wp-content/debug.log",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "runOptions": {
+                "runOn": "folderOpen"
+            }
+        },
     ],
     "inputs": [
         {

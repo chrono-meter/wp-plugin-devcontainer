@@ -72,6 +72,30 @@ if ( file_exists( '/var/www/wp-setup.complete' ) ) {
 
 
 /**
+ * Fix wp-content/{.,plugins,themes} directories exist and permissions.
+ * Without pre-configure, Docker makes root owned directory.
+ */
+foreach ( array( '.', 'plugins', 'themes' ) as $dir ) {
+	$dir_path = '/var/www/html/wp-content/' . $dir;
+
+	if ( ! is_dir( $dir_path ) ) {
+		mkdir( $dir_path, 0755, true );
+	}
+
+	if ( ! is_writable( $dir_path ) ) {
+		// try sudo chown
+		if (shell_exec( "sudo chown -R www-data:www-data $dir_path" ) === null) {
+			echo "\033[31mFailed to make $dir_path writable.\033[0m\n";
+			exit( 1 );
+		}
+
+		chmod( $dir_path, 0755 );
+	}
+}
+
+
+
+/**
  * wp core is-installed || wp core install
  *
  * @link https://developer.wordpress.org/cli/commands/core/is-installed/

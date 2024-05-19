@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * Log exceptions.
+ */
+set_exception_handler( '\error_log' );
+
+
+/**
  * Define other constants.
  */
 foreach ( $_ENV as $key => $value ) {
@@ -13,6 +19,19 @@ foreach ( $_ENV as $key => $value ) {
 		defined( $key ) || define( $key, $value );
 	}
 }
+
+
+/**
+ * Xdebug via WP-Cron.
+ */
+$GLOBALS['wp_filter']['cron_request'][10][] = array(
+	'accepted_args' => 1,
+	'function'      => 	function ( $args ) {
+		$args['url'] = add_query_arg( 'XDEBUG_SESSION_START', ini_get( 'xdebug.idekey' ) ?: 'VSCODE', $args['url'] );  // phpcs:ignore Universal.Operators.DisallowShortTernary.Found
+
+		return $args;
+	},
+);
 
 
 /**
