@@ -16,8 +16,33 @@ services:
 
   # mysql:
   #   volumes:
-  #       # persistent storage
+  #     # persistent storage
   #     - "../mysql:/var/lib/mysql"
+
+  # Example for using `mariadb` instead of `mysql`.
+  # mysql:
+  #   image: mariadb:10.6  # https://hub.docker.com/_/mariadb
+  #   volumes:
+  #     - "../mariadb:/var/lib/mysql"
+  #     # For non environment variables configuration, use a custom configuration file.
+  #     - "../mariadb.cnf:/etc/mysql/mariadb.conf.d/99-my.cnf"
+  #   environment:
+  #     # MariaDB Server Docker Official Image supports `MYSQL_*` variants.
+  #     # https://mariadb.com/kb/en/mariadb-server-docker-official-image-environment-variables/
+  #     MARIADB_AUTO_UPGRADE: "yes"
+  #   healthcheck:
+  #     # https://mariadb.com/kb/en/using-healthcheck-sh/#comment_6578
+  #     interval: 30s
+  #     timeout: 30s
+  #     retries: 3
+  #     test:
+  #       [
+  #         "CMD",
+  #         "healthcheck.sh",
+  #         "--su-mysql",
+  #         "--connect",
+  #         "--innodb_initialized"
+  #       ]
 
   # NOTE Be aware of increased resource consumption.
   # selenium:
