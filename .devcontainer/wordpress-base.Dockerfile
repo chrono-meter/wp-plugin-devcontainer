@@ -105,7 +105,7 @@ WORKDIR /var/www/html
 #
 FROM wordpress-base AS devcontainer
 RUN sudo apt-get update; \
-    sudo apt-get install -yq ssh-client zip
+    sudo apt-get install -yq ssh-client zip python3
 RUN wp package install wp-cli/dist-archive-command:@stable
 RUN sudo pecl install xdebug; \
     { \

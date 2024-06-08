@@ -57,7 +57,10 @@
                 "kind": "build",
                 "isDefault": false
             },
-            "command": "wp dist-archive ${input:selectPlugin}"
+            "command": "python3 /var/www/html/.workspace/.devcontainer/wp-dist-archive/main.py -v --force ${input:selectPlugin}",
+            "options": {
+                "cwd": "/var/www/html/wp-content/plugins"
+            }
         },
         {
             "label": "Zip theme",
@@ -66,7 +69,10 @@
                 "kind": "build",
                 "isDefault": false
             },
-            "command": "wp dist-archive ${input:selectTheme}"
+            "command": "python3 /var/www/html/.workspace/.devcontainer/wp-dist-archive/main.py -v --force ${input:selectTheme}",
+            "options": {
+                "cwd": "/var/www/html/wp-content/themes"
+            }
         },
         // Watch sass files changes and compile them to css. Uncomment the following code and replace YOUR_PLUGIN_NAME with the name of your plugin.
         // {
