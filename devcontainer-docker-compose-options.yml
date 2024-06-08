@@ -46,7 +46,41 @@ services:
 
   # NOTE Be aware of increased resource consumption.
   # selenium:
+  #   extends:
+  #     file: common.yml
+  #     service: selenium
+  #   # Example for port forwarding (selenium:80 <-- devcontainer:80)
+  #   build:
+  #     dockerfile_inline: |+
+  #       FROM selenium/standalone-chrome
+  #       RUN sudo apt-get update; sudo apt-get install -yq socat; \
+  #         { \
+  #           echo [program:portforward]; \
+  #           echo priority=20; \
+  #           echo command=/usr/bin/socat TCP-LISTEN:80,reuseaddr,fork TCP:devcontainer:80; \
+  #           echo autostart=true; \
+  #           echo autorestart=false; \
+  #           echo startsecs=0; \
+  #           echo startretries=0; \
+  #           echo ";Logs"; \
+  #           echo redirect_stderr=false; \
+  #           echo stdout_logfile=/var/log/supervisor/socat-stdout.log; \
+  #           echo stderr_logfile=/var/log/supervisor/socat-stderr.log; \
+  #           echo stdout_logfile_maxbytes=50MB; \
+  #           echo stderr_logfile_maxbytes=50MB; \
+  #           echo stdout_logfile_backups=5; \
+  #           echo stderr_logfile_backups=5; \
+  #           echo stdout_capture_maxbytes=50MB; \
+  #           echo stderr_capture_maxbytes=50MB; \
+  #         } | sudo tee /etc/supervisor/conf.d/port-forward.conf
   #   environment:
   #     LANGUAGE: ja_JP.UTF-8
-  #   ports:
-  #     - "4444:4444"
+  #     SE_VNC_NO_PASSWORD: "1"  # Set SE_VNC_NO_PASSWORD to "1" to disable VNC password.
+  #     # See https://github.com/SeleniumHQ/docker-selenium/ for more SE_* options.
+  #   networks:
+  #     - wordpress
+  #   # https://github.com/SeleniumHQ/docker-selenium/issues/2045
+  #   ulimits:
+  #     nofile:
+  #       soft: 65536
+  #       hard: 65536

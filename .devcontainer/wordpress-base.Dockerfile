@@ -10,7 +10,7 @@ RUN usermod --shell /bin/bash www-data; \
     install --mode=700 --owner=www-data --group=www-data --directory ~/.ssh; \
     sed -i -e 's/#force_color_prompt=yes/force_color_prompt=yes/g' /var/www/.bashrc; \
     apt-get update; \
-    apt-get install -yq sudo bash-completion unzip mariadb-client; \
+    apt-get install -yq sudo bash-completion unzip mariadb-client inetutils-ping; \
     rm -rf /var/lib/apt/lists/*; \
     mkdir -p /etc/bash_completion.d; \
     echo 'www-data ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers

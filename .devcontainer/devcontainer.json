@@ -26,16 +26,20 @@
     ],
     "portsAttributes": {
         "localhost:80": {
-            "label": "WordPress"
+            "label": "WordPress",
+            "protocol": "http",
         },
         "localhost:443": {
-            "label": "WordPress (https)"
+            "label": "WordPress (https)",
+            "protocol": "https",
         },
         "localhost:9003": {
-            "label": "Xdebug"
+            "label": "Xdebug",
+            "requireLocalPort": true,
         },
         "mailhog:8025": {
-            "label": "MailHog"
+            "label": "MailHog",
+            "protocol": "http",
         }
     },
     "customizations": {
