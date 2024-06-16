@@ -96,6 +96,21 @@ To check emails in your test, use [MailHog API v1](https://github.com/mailhog/Ma
  4. Open WordPress page that you want to debug.
  5. Open bookmarked JavaScript.
 
+### [User Role Editor](https://wordpress.org/plugins/user-role-editor/) activation failure via wp-cli installation.
+There are lacking caps:
+ * ure_create_roles
+ * ure_delete_roles
+ * ure_create_capabilities
+ * ure_delete_capabilities
+ * ure_manage_options  # URE_KEY_CAPABILITY
+ * ure_reset_roles
+
+So, we need to activate it manually:
+```sh
+wp plugin install --activate user-role-editor
+wp eval 'do_action("activate_user-role-editor/user-role-editor.php");'
+```
+
 ### Links
  * https://wordpress.org/plugins/tags/debug/
  * https://wordpress.org/plugins/tags/development/
