@@ -89,19 +89,27 @@ if __name__ == '__main__':
                     logging.info(f'Ignore {entry}')
                 return
 
-            if entry.is_dir():
-                logging.debug(f'Processing {entry.relative_to(basedir)}')
+            arcname = entry.relative_to(basedir).as_posix()
+            zif = zipfile.ZipInfo.from_file(arcname)
+            zif.compress_type = archive.compression
 
-                # Add empty directory.
-                zif = zipfile.ZipInfo(entry.relative_to(basedir).as_posix() + '/')
-                archive.writestr(zif, '')
+            if entry.is_dir():
+                logging.debug(f'Processing {entry}')
+
+                # Force permissions to 775.
+                zif.external_attr = zif.external_attr & ~(0o777 << 16) | 0o775 << 16
+
+                archive.writestr(zif, b'')
 
                 for item in entry.iterdir():
                     add_to_archive(item, basedir, archive)
 
             else:
-                arcname = entry.relative_to(basedir).as_posix()
                 logging.debug(f'Adding {arcname} from {entry}')
-                archive.write(entry, arcname)
+
+                # Force permissions to 664.
+                zif.external_attr = zif.external_attr & ~(0o777 << 16) | 0o664 << 16
+
+                archive.writestr(zif, entry.read_bytes())
 
         add_to_archive(args.directory, args.directory.parent, archive)
