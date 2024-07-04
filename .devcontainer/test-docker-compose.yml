@@ -41,9 +41,9 @@ services:
   php:
     build:
       args:
-        TAG: 8.0-cli
+        TAG: cli
       dockerfile_inline: |+
-        ARG TAG=8.0-cli
+        ARG TAG=cli
         FROM php:$${TAG}
         RUN apt-get update; \
             apt-get install -yq git unzip mariadb-client

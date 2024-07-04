@@ -96,6 +96,14 @@ To check emails in your test, use [MailHog API v1](https://github.com/mailhog/Ma
  4. Open WordPress page that you want to debug.
  5. Open bookmarked JavaScript.
 
+### Why don't my Xdebug breakpoints work?
+Do you get frustrated when your breakpoints don't work in Xdebug? First, calm down, before you waste your precious time.
+
+ 1. Install [browser extension](https://xdebug.org/docs/step_debug#browser-extensions), then enable on your site.
+ 2. Unfortunately, the breakpoint that you set will be never reached on your request or execute condition. Set new breakpoint on prior line or upper function calling.
+ 3. Finally, try to call `\xdebug_break();` on the breakpoint. If this method doesn't work then your Xdebug configuration is broken.
+
+
 ### [User Role Editor](https://wordpress.org/plugins/user-role-editor/) activation failure via wp-cli installation.
 There are lacking caps:
  * ure_create_roles

@@ -1,6 +1,5 @@
 {
     "recommendations": [
-        "github.copilot",
-        "bmewburn.vscode-intelephense-client"
+        "github.copilot"
     ]
 }

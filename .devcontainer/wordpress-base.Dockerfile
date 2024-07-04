@@ -28,7 +28,8 @@ RUN openssl genrsa -out /var/www/ssl-cert-snakeoil.key 2048 && \
     sed -i 's/SSLCertificateKeyFile.*snakeoil\.key/SSLCertificateKeyFile \/var\/www\/ssl-cert-snakeoil.key/g' /etc/apache2/sites-available/default-ssl.conf && \
     a2enmod ssl && \
     a2enmod socache_shmcb && \
-    a2ensite default-ssl
+    a2ensite default-ssl && \
+    printf "<Directory /var/www/>\n    #Options Indexes FollowSymLinks\n    AllowOverride All\n    #Require all granted\n</Directory>" > /etc/apache2/conf-enabled/wordpress.conf
 
 
 #
@@ -69,6 +70,22 @@ RUN curl -sL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cl
 
 
 #
+# Install and configure Xdebug
+#
+RUN sudo pecl install xdebug; \
+    { \
+        echo 'xdebug.idekey=VSCODE'; \
+        echo 'xdebug.mode=develop,debug'; \
+        #echo 'xdebug.start_with_request=trigger'; \
+        #echo 'xdebug.log=/tmp/xdebug.log'; \
+        echo xdebug.client_host=host.docker.internal; \
+        #echo 'xdebug.client_port=9003'; \
+    } | sudo tee $PHP_INI_DIR/conf.d/docker-php-ext-xdebug-config.ini; \
+    sudo chown -R www-data:www-data /usr/local/etc/php; \
+    docker-php-ext-enable xdebug
+
+
+#
 # Install WordPress
 #
 RUN cp -a /usr/src/wordpress/. /var/www/html/; \
@@ -105,19 +122,17 @@ WORKDIR /var/www/html
 #
 FROM wordpress-base AS devcontainer
 RUN sudo apt-get update; \
-    sudo apt-get install -yq ssh-client zip python3
+    sudo apt-get install -yq ssh-client zip npm python3
 #RUN wp package install wp-cli/dist-archive-command:@stable
 RUN sudo pecl install xdebug; \
     { \
         echo 'xdebug.idekey=VSCODE'; \
         echo 'xdebug.mode=develop,debug'; \
-        echo 'xdebug.start_with_request=trigger'; \
-        #echo '#xdebug.log=/tmp/xdebug.log'; \
-        #echo '#xdebug.client_host=host.docker.internal'; \
-        #echo '#xdebug.client_port=9003'; \
-    } | sudo tee $PHP_INI_DIR/conf.d/docker-php-ext-xdebug-config.ini; \
-    sudo chown -R www-data:www-data /usr/local/etc/php; \
-    docker-php-ext-enable xdebug
+        #echo 'xdebug.start_with_request=trigger'; \
+        #echo 'xdebug.log=/tmp/xdebug.log'; \
+        echo xdebug.client_host=localhost; \
+        #echo 'xdebug.client_port=9003'; \
+    } | sudo tee $PHP_INI_DIR/conf.d/docker-php-ext-xdebug-config.ini
 RUN composer global config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true; \
     composer global require --dev wp-coding-standards/wpcs
 RUN echo "<?php phpinfo();" > /var/www/html/phpinfo.php

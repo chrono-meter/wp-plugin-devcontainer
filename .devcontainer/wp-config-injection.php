@@ -51,7 +51,6 @@ $GLOBALS['wp_filter']['wp_mail_from'][10][]   = array(
 );
 
 
-
 /**
  * Spoofing host and port for WordPress environment.
  * To use this, include from your "wp-config.php" file.
