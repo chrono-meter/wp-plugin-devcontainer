@@ -5,14 +5,14 @@ FROM wordpress:${TAG} AS wordpress-base
 #
 # Configure user settings for www-data console operation
 #
-RUN usermod --shell /bin/bash www-data; \
-    cp -a /etc/skel/. /var/www/; \
-    install --mode=700 --owner=www-data --group=www-data --directory ~/.ssh; \
-    sed -i -e 's/#force_color_prompt=yes/force_color_prompt=yes/g' /var/www/.bashrc; \
-    apt-get update; \
-    apt-get install -yq sudo bash-completion unzip mariadb-client inetutils-ping; \
-    rm -rf /var/lib/apt/lists/*; \
-    mkdir -p /etc/bash_completion.d; \
+RUN usermod --shell /bin/bash www-data && \
+    cp -a /etc/skel/. /var/www/ && \
+    install --mode=700 --owner=www-data --group=www-data --directory ~/.ssh && \
+    sed -i -e 's/#force_color_prompt=yes/force_color_prompt=yes/g' /var/www/.bashrc && \
+    apt-get update && \
+    apt-get install -yq sudo bash-completion unzip mariadb-client inetutils-ping && \
+    rm -rf /var/lib/apt/lists/* && \
+    mkdir -p /etc/bash_completion.d && \
     echo 'www-data ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 
@@ -47,11 +47,14 @@ RUN printf "upload_max_filesize=0\npost_max_size=1024M" >> $PHP_INI_DIR/conf.d/w
 # Install composer
 #
 # @link https://getcomposer.org/download/
+# @link https://getcomposer.org/doc/articles/troubleshooting.md#operation-timed-out-ipv6-issues-
+# @link https://github.com/composer/composer/issues/9358
 #
-RUN curl -sL https://getcomposer.org/installer | php; \
-    mv composer.phar /usr/local/bin/composer; \
-    mkdir /var/www/.composer; \
-    chown www-data:www-data /var/www/.composer; \
+ENV COMPOSER_IPRESOLVE=4
+RUN curl -sL https://getcomposer.org/installer | php && \
+    mv composer.phar /usr/local/bin/composer && \
+    mkdir -p /var/www/.composer && \
+    chown www-data:www-data /var/www/.composer && \
     curl -sL "https://github.com/bramus/composer-autocomplete/raw/master/composer-autocomplete" -o /etc/bash_completion.d/composer-autocomplete
 ENV PATH="/var/www/.composer/vendor/bin:${PATH}"
 
@@ -61,18 +64,19 @@ ENV PATH="/var/www/.composer/vendor/bin:${PATH}"
 #
 # @link https://wp-cli.org/#installing
 #
-RUN curl -sL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o wp; \
-    chmod +x wp; \
-    mv wp /usr/local/bin/; \
-    mkdir /var/www/.wp-cli; \
-    chown www-data:www-data /var/www/.wp-cli; \
+RUN curl -sL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o wp && \
+    chmod +x wp && \
+    mv wp /usr/local/bin/ && \
+    mkdir -p /var/www/.wp-cli && \
+    echo "path: /var/www/html" >> /var/www/.wp-cli/config.yml && \
+    chown -R www-data:www-data /var/www/.wp-cli && \
     curl -sL "https://raw.githubusercontent.com/wp-cli/wp-cli/v2.9.0/utils/wp-completion.bash" -o /etc/bash_completion.d/wp-completion.bash
 
 
 #
 # Install and configure Xdebug
 #
-RUN sudo pecl install xdebug; \
+RUN pecl install xdebug && \
     { \
         echo 'xdebug.idekey=VSCODE'; \
         echo 'xdebug.mode=develop,debug'; \
@@ -80,8 +84,8 @@ RUN sudo pecl install xdebug; \
         #echo 'xdebug.log=/tmp/xdebug.log'; \
         echo xdebug.client_host=host.docker.internal; \
         #echo 'xdebug.client_port=9003'; \
-    } | sudo tee $PHP_INI_DIR/conf.d/docker-php-ext-xdebug-config.ini; \
-    sudo chown -R www-data:www-data /usr/local/etc/php; \
+    } | tee $PHP_INI_DIR/conf.d/docker-php-ext-xdebug-config.ini && \
+    chown -R www-data:www-data /usr/local/etc/php && \
     docker-php-ext-enable xdebug
 
 
@@ -121,11 +125,13 @@ WORKDIR /var/www/html
 # Configure Dev container
 #
 FROM wordpress-base AS devcontainer
-RUN sudo apt-get update; \
+RUN sudo apt-get update && \
     sudo apt-get install -yq ssh-client zip npm python3
+RUN mkdir /var/www/.npm && \
+    npm config set prefix '/var/www/.npm'
+ENV PATH="/var/www/.npm/bin:${PATH}"
 #RUN wp package install wp-cli/dist-archive-command:@stable
-RUN sudo pecl install xdebug; \
-    { \
+RUN { \
         echo 'xdebug.idekey=VSCODE'; \
         echo 'xdebug.mode=develop,debug'; \
         #echo 'xdebug.start_with_request=trigger'; \
@@ -136,7 +142,7 @@ RUN sudo pecl install xdebug; \
 RUN composer global config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true; \
     composer global require --dev wp-coding-standards/wpcs
 RUN echo "<?php phpinfo();" > /var/www/html/phpinfo.php
-RUN curl https://www.adminer.org/latest-mysql-en.php --silent --location > /var/www/html/adminer-mysql-en.php; \
+RUN curl https://www.adminer.org/latest-mysql-en.php --silent --location > /var/www/html/adminer-mysql-en.php && \
     { \
         echo "<?php if ( ! count( \$_GET ) ) { \$_POST['auth'] = array('driver' => 'server', 'server' => \$_ENV['WORDPRESS_DB_HOST'], 'username' => \$_ENV['WORDPRESS_DB_USER'], 'password' => \$_ENV['WORDPRESS_DB_PASSWORD'], 'db' => \$_ENV['WORDPRESS_DB_NAME']); } require_once __DIR__ . '/adminer-mysql-en.php';"; \
     } > /var/www/html/adminer.php

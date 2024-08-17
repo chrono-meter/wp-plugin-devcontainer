@@ -45,9 +45,9 @@ services:
       dockerfile_inline: |+
         ARG TAG=cli
         FROM php:$${TAG}
-        RUN apt-get update; \
+        RUN apt-get update && \
             apt-get install -yq git unzip mariadb-client
-        RUN pecl install xdebug; \
+        RUN pecl install xdebug && \
           { \
               echo 'xdebug.idekey=VSCODE'; \
               echo 'xdebug.mode=develop,debug'; \
@@ -57,13 +57,13 @@ services:
               #echo 'xdebug.client_port=9003'; \
           } | tee $PHP_INI_DIR/conf.d/docker-php-ext-xdebug-config.ini; \
           docker-php-ext-enable xdebug
-        RUN curl -sL https://getcomposer.org/installer | php; \
-            mv composer.phar /usr/local/bin/composer; \
-            mkdir /var/www/.composer; \
+        RUN curl -sL https://getcomposer.org/installer | php && \
+            mv composer.phar /usr/local/bin/composer && \
+            mkdir -p /var/www/.composer && \
             chown www-data:www-data /var/www/.composer
         ENV PATH="/root/.composer/vendor/bin/:${PATH}"
-        RUN curl -sL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o wp; \
-            chmod +x wp; \
+        RUN curl -sL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o wp && \
+            chmod +x wp && \
             mv wp /usr/local/bin/
     depends_on:
       selenium:
