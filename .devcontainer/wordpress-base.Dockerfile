@@ -10,7 +10,7 @@ RUN usermod --shell /bin/bash www-data && \
     install --mode=700 --owner=www-data --group=www-data --directory ~/.ssh && \
     sed -i -e 's/#force_color_prompt=yes/force_color_prompt=yes/g' /var/www/.bashrc && \
     apt-get update && \
-    apt-get install -yq sudo bash-completion unzip mariadb-client inetutils-ping && \
+    apt-get install -yq sudo bash-completion unzip mariadb-client iproute2 inetutils-ping && \
     rm -rf /var/lib/apt/lists/* && \
     mkdir -p /etc/bash_completion.d && \
     echo 'www-data ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
@@ -46,16 +46,16 @@ RUN printf "upload_max_filesize=0\npost_max_size=1024M" >> $PHP_INI_DIR/conf.d/w
 #
 # Install composer
 #
-# @link https://getcomposer.org/download/
+# @link https://getcomposer.org/download/#manual-download
 # @link https://getcomposer.org/doc/articles/troubleshooting.md#operation-timed-out-ipv6-issues-
 # @link https://github.com/composer/composer/issues/9358
 #
 ENV COMPOSER_IPRESOLVE=4
-RUN curl -sL https://getcomposer.org/installer | php && \
-    mv composer.phar /usr/local/bin/composer && \
+RUN curl --location --ipv4 --output /usr/local/bin/composer https://getcomposer.org/download/latest-stable/composer.phar && \
+    chmod +x /usr/local/bin/composer && \
     mkdir -p /var/www/.composer && \
     chown www-data:www-data /var/www/.composer && \
-    curl -sL "https://github.com/bramus/composer-autocomplete/raw/master/composer-autocomplete" -o /etc/bash_completion.d/composer-autocomplete
+    curl --location "https://github.com/bramus/composer-autocomplete/raw/master/composer-autocomplete" --output /etc/bash_completion.d/composer-autocomplete
 ENV PATH="/var/www/.composer/vendor/bin:${PATH}"
 
 
@@ -64,13 +64,13 @@ ENV PATH="/var/www/.composer/vendor/bin:${PATH}"
 #
 # @link https://wp-cli.org/#installing
 #
-RUN curl -sL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o wp && \
+RUN curl --location https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar --output wp && \
     chmod +x wp && \
     mv wp /usr/local/bin/ && \
     mkdir -p /var/www/.wp-cli && \
     echo "path: /var/www/html" >> /var/www/.wp-cli/config.yml && \
     chown -R www-data:www-data /var/www/.wp-cli && \
-    curl -sL "https://raw.githubusercontent.com/wp-cli/wp-cli/v2.9.0/utils/wp-completion.bash" -o /etc/bash_completion.d/wp-completion.bash
+    curl --location "https://raw.githubusercontent.com/wp-cli/wp-cli/v2.9.0/utils/wp-completion.bash" --output /etc/bash_completion.d/wp-completion.bash
 
 
 #
@@ -126,10 +126,19 @@ WORKDIR /var/www/html
 #
 FROM wordpress-base AS devcontainer
 RUN sudo apt-get update && \
-    sudo apt-get install -yq ssh-client zip npm python3
-RUN mkdir /var/www/.npm && \
-    npm config set prefix '/var/www/.npm'
-ENV PATH="/var/www/.npm/bin:${PATH}"
+    sudo apt-get install -yq ssh-client zip python3 git
+# https://github.com/nvm-sh/nvm?tab=readme-ov-file#manual-install
+ENV NVM_DIR="/var/www/.nvm"
+RUN git clone https://github.com/nvm-sh/nvm.git "$NVM_DIR" && \
+    cd "$NVM_DIR"  && \
+    git checkout `git describe --abbrev=0 --tags --match "v[0-9]*" $(git rev-list --tags --max-count=1)` && \
+    \. "$NVM_DIR/nvm.sh" && \
+    { \
+        echo '[ -s "$NVM_DIR/nvm.sh" ] && \\. "$NVM_DIR/nvm.sh" # This loads nvm'; \
+        echo '[ -s "$NVM_DIR/bash_completion" ] && \\. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion'; \
+    } | tee --append $HOME/.bashrc && \
+    command -v nvm && \
+    nvm install --lts
 #RUN wp package install wp-cli/dist-archive-command:@stable
 RUN { \
         echo 'xdebug.idekey=VSCODE'; \
@@ -142,7 +151,7 @@ RUN { \
 RUN composer global config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true; \
     composer global require --dev wp-coding-standards/wpcs
 RUN echo "<?php phpinfo();" > /var/www/html/phpinfo.php
-RUN curl https://www.adminer.org/latest-mysql-en.php --silent --location > /var/www/html/adminer-mysql-en.php && \
+RUN curl https://www.adminer.org/latest-mysql-en.php --location --output /var/www/html/adminer-mysql-en.php && \
     { \
         echo "<?php if ( ! count( \$_GET ) ) { \$_POST['auth'] = array('driver' => 'server', 'server' => \$_ENV['WORDPRESS_DB_HOST'], 'username' => \$_ENV['WORDPRESS_DB_USER'], 'password' => \$_ENV['WORDPRESS_DB_PASSWORD'], 'db' => \$_ENV['WORDPRESS_DB_NAME']); } require_once __DIR__ . '/adminer-mysql-en.php';"; \
     } > /var/www/html/adminer.php

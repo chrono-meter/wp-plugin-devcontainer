@@ -101,7 +101,7 @@
         //     }
         // },
         {
-            "label": "PHP debeg.log",
+            "label": "Show debug.log",
             "type": "shell",
             "command": "[[ -v REMOTE_CONTAINERS ]] && tail -f /var/www/html/wp-content/debug.log",
             "presentation": {
@@ -112,6 +112,15 @@
                 "runOn": "folderOpen"
             }
         },
+        {
+            "label": "Truncate debug.log",
+            "type": "shell",
+            "command": "[[ -v REMOTE_CONTAINERS ]] && truncate -s 0 /var/www/html/wp-content/debug.log",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": []
+        }
     ],
     "inputs": [
         {

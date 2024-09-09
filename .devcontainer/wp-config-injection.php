@@ -1,9 +1,40 @@
-<?php
+<?php  // phpcs:ignore
+// phpcs:disable Squiz.Commenting, WordPress.WP.GlobalVariablesOverride.Prohibited, WordPress.PHP.DevelopmentFunctions, WordPress.NamingConventions, WordPress.Security.ValidatedSanitizedInput
 
 /**
  * Log exceptions.
  */
 set_exception_handler( '\error_log' );
+
+$GLOBALS['wp_filter']['is_wp_error_instance'][10][] = array(
+	'accepted_args' => 1,
+	'function'      => function ( $wp_error ) {
+		if ( ! $wp_error->has_errors() ) {
+			return;
+		}
+
+		$result = '`is_wp_error` detected an instance of `WP_Error` class.';
+
+		foreach ( $wp_error->get_error_codes() as $index => $code ) {
+			$result .= PHP_EOL . sprintf(
+				'    #%d %s: %s',
+				$index + 1,
+				$code,
+				$wp_error->get_error_message( $code ),
+			);
+
+			$error_data = $wp_error->get_error_data( $code );
+			if ( ! empty( $error_data ) ) {
+				$result .= PHP_EOL . sprintf(
+					'        Data: %s',
+					print_r( $error_data, true ),
+				);
+			}
+		}
+
+		error_log( $result );
+	},
+);
 
 
 /**
@@ -12,7 +43,7 @@ set_exception_handler( '\error_log' );
 foreach ( $_ENV as $key => $value ) {
 	if ( strpos( $key, 'PHPINI_' ) === 0 ) {
 		$key = substr( $key, strlen( 'PHPINI_' ) );
-		ini_set( $key, $value );
+		ini_set( $key, $value );  // phpcs:ignore WordPress.PHP.IniSet.Risky
 
 	} elseif ( strpos( $key, 'WORDPRESS_CONST_' ) === 0 ) {
 		$key = substr( $key, strlen( 'WORDPRESS_CONST_' ) );
@@ -59,35 +90,38 @@ $GLOBALS['wp_filter']['wp_mail_from'][10][]   = array(
  * @see \is_ssl()
  * @link https://ngrok.com/docs/using-ngrok-with/wordpress/
  */
-if ( ! empty( $host = @$_SERVER['HTTP_HOST'] ) ) {
-	$scheme = ! empty( $_SERVER['HTTPS'] ) ? 'https' : ( $_SERVER['REQUEST_SCHEME'] ?? 'http' );
+( function () {
+	if ( ! empty( $_SERVER['HTTP_HOST'] ) ) {
+		$host   = $_SERVER['HTTP_HOST'];
+		$scheme = ! empty( $_SERVER['HTTPS'] ) ? 'https' : ( $_SERVER['REQUEST_SCHEME'] ?? 'http' );
 
-	if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) || isset( $_SERVER['HTTP_X_SCHEME'] ) ) {
-		// reverse proxy environment
-		$scheme = $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? $_SERVER['HTTP_X_SCHEME'];
+		if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) || isset( $_SERVER['HTTP_X_SCHEME'] ) ) {
+			// reverse proxy environment
+			$scheme = $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? $_SERVER['HTTP_X_SCHEME'];
 
-		if ( $scheme === 'https' && $_SERVER['REQUEST_SCHEME'] === 'http' ) {
-			// faking https environment for WordPress generated URLs
-			defined( 'FORCE_SSL_ADMIN' ) || define( 'FORCE_SSL_ADMIN', false );
-			$_SERVER['HTTPS'] = 'on';
+			if ( 'https' === $scheme && 'http' === $_SERVER['REQUEST_SCHEME'] ) {
+				// faking https environment for WordPress generated URLs
+				defined( 'FORCE_SSL_ADMIN' ) || define( 'FORCE_SSL_ADMIN', false );
+				$_SERVER['HTTPS'] = 'on';
+			}
+		} elseif (
+			! empty( $_SERVER['SERVER_PORT'] )
+			&&
+			( 'https' === $scheme ? 443 : 80 ) !== (int) $_SERVER['SERVER_PORT']
+			&&
+			! str_contains( $host, ':' )
+		) {
+			// non-standard port
+			$host .= ':' . $_SERVER['SERVER_PORT'];
 		}
-	} elseif (
-		@$_SERVER['SERVER_PORT'] != ( $scheme === 'https' ? 443 : 80 )
-		&&
-		! str_contains( $host, ':' )
-	) {
-		// non-standard port
-		$host .= ':' . $_SERVER['SERVER_PORT'];
+
+		defined( 'WP_SITEURL' ) || define( 'WP_SITEURL', $scheme . '://' . $host );
+		defined( 'WP_HOME' ) || define( 'WP_HOME', WP_SITEURL );
+		defined( 'FORCE_SSL_ADMIN' ) || define( 'FORCE_SSL_ADMIN', 'https' === $scheme );
+		defined( 'COOKIE_DOMAIN' ) || define( 'COOKIE_DOMAIN', preg_replace( '/:\d+$/', '', $host ) );
+		defined( 'SITECOOKIEPATH' ) || define( 'SITECOOKIEPATH', '.' );
 	}
-
-	defined( 'WP_SITEURL' ) || define( 'WP_SITEURL', $scheme . '://' . $host );
-	defined( 'WP_HOME' ) || define( 'WP_HOME', WP_SITEURL );
-	defined( 'FORCE_SSL_ADMIN' ) || define( 'FORCE_SSL_ADMIN', $scheme === 'https' );
-	defined( 'COOKIE_DOMAIN' ) || define( 'COOKIE_DOMAIN', preg_replace( '/:\d+$/', '', $host ) );
-	defined( 'SITECOOKIEPATH' ) || define( 'SITECOOKIEPATH', '.' );
-
-	unset( $host, $scheme );
-}
+} )();
 
 
 /**
@@ -103,14 +137,14 @@ $GLOBALS['wp_filter']['site_health_navigation_tabs'][10][] = array(
 $GLOBALS['wp_filter']['site_health_tab_content'][10][]     = array(
 	'accepted_args' => 1,
 	'function'      => function ( $tab ) {
-		if ( $tab === 'phpinfo' ) {
+		if ( 'phpinfo' === $tab ) {
 			ob_start();
 			phpinfo();
 			$phpinfo = preg_replace( '%^.*<body>(.*)</body>.*$%ms', '$1', ob_get_clean() );
 
 			?>
 				<div class="health-check-body">
-					<?php echo $phpinfo; ?>
+					<?php echo $phpinfo;  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</div>
 			<?php
 

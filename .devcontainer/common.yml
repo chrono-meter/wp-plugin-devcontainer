@@ -79,9 +79,9 @@ services:
     environment: *wordpress_environment
     networks:
       - wordpress
-    # extra_hosts:
-    #   # For debugging from host machine.
-    #   - "host.docker.internal:host-gateway"
+    extra_hosts:
+      # For debugging from host machine.
+      - "host.docker.internal:host-gateway"
 
 
 networks:

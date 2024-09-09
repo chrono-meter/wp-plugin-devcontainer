@@ -1,3 +1,4 @@
+// https://containers.dev/implementors/json_reference/
 {
     "name": "${localWorkspaceFolderBasename}",
     "dockerComposeFile": [
