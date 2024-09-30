@@ -66,6 +66,13 @@ services:
             return $$result;
           },
         ];
+      TEST_ENV_HTTP_PORT: 81
+      TEST_ENV_HTTPS_PORT: 444
+      TEST_ENV_PATH: /var/www/html/.test
+      TEST_ENV_DB_PREFIX: test_
+      TEST_E2E_PATH: /var/www/html/.workspace/src/e2e
+      # desktop-lite's screen resolution
+      VNC_RESOLUTION: 1440x900x16
 
 
 networks:

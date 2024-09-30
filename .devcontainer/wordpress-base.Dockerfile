@@ -24,12 +24,36 @@ RUN openssl genrsa -out /var/www/ssl-cert-snakeoil.key 2048 && \
     echo "subjectAltName = DNS:localhost" > /var/www/san.txt && \
     openssl x509 -req -days 365 -signkey /var/www/ssl-cert-snakeoil.key -in /var/www/ssl-cert-snakeoil.csr -extfile /var/www/san.txt -out /var/www/ssl-cert-snakeoil.pem && \
     rm /var/www/ssl-cert-snakeoil.csr /var/www/san.txt && \
-    sed -i 's/SSLCertificateFile.*snakeoil\.pem/SSLCertificateFile \/var\/www\/ssl-cert-snakeoil.pem/g' /etc/apache2/sites-available/default-ssl.conf && \
-    sed -i 's/SSLCertificateKeyFile.*snakeoil\.key/SSLCertificateKeyFile \/var\/www\/ssl-cert-snakeoil.key/g' /etc/apache2/sites-available/default-ssl.conf && \
+    sed -i 's/SSLCertificateFile.*snakeoil\.pem/SSLCertificateFile \/var\/www\/ssl-cert-snakeoil.pem/g' $APACHE_CONFDIR/sites-available/default-ssl.conf && \
+    sed -i 's/SSLCertificateKeyFile.*snakeoil\.key/SSLCertificateKeyFile \/var\/www\/ssl-cert-snakeoil.key/g' $APACHE_CONFDIR/sites-available/default-ssl.conf && \
     a2enmod ssl && \
     a2enmod socache_shmcb && \
     a2ensite default-ssl && \
-    printf "<Directory /var/www/>\n    #Options Indexes FollowSymLinks\n    AllowOverride All\n    #Require all granted\n</Directory>" > /etc/apache2/conf-enabled/wordpress.conf
+    printf "<Directory /var/www/>\n    #Options Indexes FollowSymLinks\n    AllowOverride All\n    #Require all granted\n</Directory>" > $APACHE_CONFDIR/conf-enabled/wordpress.conf
+
+
+#
+# Setup testing environment.
+#
+ENV TEST_ENV_HTTP_PORT=81
+ENV TEST_ENV_HTTPS_PORT=444
+ENV TEST_ENV_TABLE_PREFIX=test_
+ENV TEST_ENV_PATH=/var/www/html/.test
+ENV TEST_E2E_PATH=/var/www/html/.workspace/src/e2e
+# NOTE: APACHE_CONFDIR=/etc/apache2
+RUN mkdir -p ${TEST_ENV_PATH} && \
+    { \
+        echo "Listen ${TEST_ENV_HTTP_PORT}"; \
+        echo '<IfModule ssl_module>'; \
+        echo "    Listen ${TEST_ENV_HTTPS_PORT}"; \
+        echo '</IfModule>'; \
+        cat $APACHE_CONFDIR/sites-available/000-default.conf; \
+        cat $APACHE_CONFDIR/sites-available/default-ssl.conf; \
+    } | tee $APACHE_CONFDIR/sites-available/testing.conf && \
+    sed -i "s/80/${TEST_ENV_HTTP_PORT}/" $APACHE_CONFDIR/sites-available/testing.conf && \
+    sed -i "s/443/${TEST_ENV_HTTPS_PORT}/" $APACHE_CONFDIR/sites-available/testing.conf && \
+    sed -i "s|/var/www/html|${TEST_ENV_PATH}|" $APACHE_CONFDIR/sites-available/testing.conf && \
+    ln -s $APACHE_CONFDIR/sites-available/testing.conf $APACHE_CONFDIR/sites-enabled/testing.conf
 
 
 #
@@ -68,7 +92,7 @@ RUN curl --location https://raw.githubusercontent.com/wp-cli/builds/gh-pages/pha
     chmod +x wp && \
     mv wp /usr/local/bin/ && \
     mkdir -p /var/www/.wp-cli && \
-    echo "path: /var/www/html" >> /var/www/.wp-cli/config.yml && \
+    # echo "path: /var/www/html" >> /var/www/.wp-cli/config.yml && \
     chown -R www-data:www-data /var/www/.wp-cli && \
     curl --location "https://raw.githubusercontent.com/wp-cli/wp-cli/v2.9.0/utils/wp-completion.bash" --output /etc/bash_completion.d/wp-completion.bash
 
@@ -76,7 +100,16 @@ RUN curl --location https://raw.githubusercontent.com/wp-cli/builds/gh-pages/pha
 #
 # Install and configure Xdebug
 #
-RUN pecl install xdebug && \
+# https://xdebug.org/docs/install#source
+# https://pecl.php.net/package/xdebug
+# https://github.com/xdebug/xdebug/blob/xdebug_3_3/src/debugger/com.c#L614
+RUN cd /usr/local/lib/php/extensions/ && \
+    curl https://pecl.php.net/get/xdebug-3.3.2.tgz --location --output - | tar xz && mv xdebug-* xdebug && \
+    cd xdebug && \
+    sed -i 's/XLOG_ERR, "NOCON"/XLOG_INFO, "NOCON"/g' src/debugger/com.c && \
+    phpize && ./configure --enable-xdebug && make && \
+    make install && \
+    echo "zend_extension=xdebug" | tee $PHP_INI_DIR/conf.d/docker-php-ext-xdebug.ini && \
     { \
         echo 'xdebug.idekey=VSCODE'; \
         echo 'xdebug.mode=develop,debug'; \
@@ -84,9 +117,7 @@ RUN pecl install xdebug && \
         #echo 'xdebug.log=/tmp/xdebug.log'; \
         echo xdebug.client_host=host.docker.internal; \
         #echo 'xdebug.client_port=9003'; \
-    } | tee $PHP_INI_DIR/conf.d/docker-php-ext-xdebug-config.ini && \
-    chown -R www-data:www-data /usr/local/etc/php && \
-    docker-php-ext-enable xdebug
+    } | tee $PHP_INI_DIR/conf.d/docker-php-ext-xdebug-config.ini
 
 
 #
@@ -139,6 +170,10 @@ RUN git clone https://github.com/nvm-sh/nvm.git "$NVM_DIR" && \
     } | tee --append $HOME/.bashrc && \
     command -v nvm && \
     nvm install --lts
+# Install Playwright.
+RUN \. "$NVM_DIR/nvm.sh" && \
+    npm install -g playwright@latest && \
+    npx playwright install --with-deps
 #RUN wp package install wp-cli/dist-archive-command:@stable
 RUN { \
         echo 'xdebug.idekey=VSCODE'; \

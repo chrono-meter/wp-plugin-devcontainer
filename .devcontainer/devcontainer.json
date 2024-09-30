@@ -18,10 +18,15 @@
         },
         // https://github.com/devcontainers/features/tree/main/src/git
         "ghcr.io/devcontainers/features/git:1": {},
+        // https://github.com/devcontainers/features/tree/main/src/desktop-lite
+        // https://github.com/devcontainers/features/blob/main/src/desktop-lite/install.sh
+        "ghcr.io/devcontainers/features/desktop-lite:1": {},
     },
     "forwardPorts": [
         80,
         443,
+        5901,
+        6080,
         9003,
         "mailhog:8025"
     ],
@@ -33,6 +38,12 @@
         "localhost:443": {
             "label": "WordPress (https)",
             "protocol": "https",
+        },
+        "localhost:5901": {
+            "label": "desktop-lite (vnc)",
+        },
+        "localhost:6080": {
+            "label": "desktop-lite (novnc)",
         },
         "localhost:9003": {
             "label": "Xdebug",
