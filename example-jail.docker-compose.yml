@@ -1,0 +1,55 @@
+# NOTE: `docker network prune` may resolve problems.
+networks:
+  default:
+    ipam:
+      config:
+        # Uses an uncommon range to avoid overlapping with other bridge networks on the host.
+        - subnet: 10.89.42.0/24
+          # Dynamically-assigned containers only draw from .64-.127, so they can
+          # never race with (and briefly steal) coredns's static .2 address.
+          ip_range: 10.89.42.64/26
+
+services:
+  coredns:
+    image: coredns/coredns:latest
+    networks:
+      default:
+        ipv4_address: 10.89.42.2
+    command: -conf /etc/coredns/Corefile
+    configs:
+      - source: coredns-corefile
+        target: /etc/coredns/Corefile
+
+  mailhog:
+    image: mailhog/mailhog
+
+  jailed:
+    image: alpine:latest
+    depends_on:
+      - coredns
+      - mailhog
+    extra_hosts:
+      # NOTE: docker compose appends to /etc/hosts automatically. Execute like `echo '127.0.0.1 apex2.example.tld' >> /etc/hosts` gives the same effect.
+      - "apex.example.tld:127.0.0.1"
+    dns:
+      - 10.89.42.2
+    command: sh -c "sleep infinity"
+
+configs:
+  coredns-corefile:
+    content: |+
+      # Allowlist for external domains (resolve via the internet)
+      api.github.com *.github.com {
+          reload 10s
+          forward . 8.8.8.8
+          log
+      }
+
+      # Other service names are preferentially resolved by Docker's built-in DNS (127.0.0.11)
+      # All other external communications are refused
+      . {
+          reload 10s
+          template IN A {
+              rcode REFUSED
+          }
+      }

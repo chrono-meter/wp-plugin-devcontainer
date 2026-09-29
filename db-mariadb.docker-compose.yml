@@ -1,6 +1,6 @@
 services:
   db:
-    image: mariadb:10.6  # https://hub.docker.com/_/mariadb
+    image: mariadb:${MARIADB_VERSION:-latest}  # https://hub.docker.com/_/mariadb
     volumes:
       - "../mariadb:/var/lib/mysql"
       # For non environment variables configuration, use a custom configuration file.

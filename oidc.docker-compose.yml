@@ -4,7 +4,6 @@ services:
   oidc:
     image: ghcr.io/soluto/oidc-server-mock:9.0.1
     environment:
-      <<: *common-environment
       ASPNETCORE_ENVIRONMENT: Development
       SERVER_OPTIONS_INLINE: |
         {

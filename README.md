@@ -15,21 +15,23 @@ A simple dev container template for WordPress plugin development.
     Remote Development:
 
        1. Prepare Linux PC. Recommended RAM is 4GB or higher.
-       2. Install requirements in your terminal PC:
+       1. Install requirements in your terminal PC:
           * [Remote Development Extension Pack](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
-       3. Configure server.
+       1. Configure server.
           * [Install docker](https://code.visualstudio.com/docs/devcontainers/containers#_installation:~:text=tricks%20for%20troubleshooting.-,Linux,-%3A).
           * Setup [Remote Tunnels](https://code.visualstudio.com/docs/remote/tunnels) or SSH (configure your router for forwarding ssh port).
           * Setup WoL or remote power-on method, if you need.
-       4. Connect to server.
-       5. Recommended: Install [Docker for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker) in server.
+       1. Connect to server.
+       1. Recommended: Install [Docker for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker) in server.
 
- 2. Clone this repository. `git clone https://github.com/chrono-meter/wp-plugin-devcontainer.git YOUR-PROJECT-NAME`
- 3. Open cloned folder named `YOUR-PROJECT-NAME` in Visual Studio Code.
- 4. Edit [devcontainer-docker-compose-options.yml](../devcontainer-docker-compose-options.yml), and edit [test-docker-compose-options.yml](../test-docker-compose-options.yml).
- 5. Open dev container: `Ctrl+Shift+P` (Command pallete) → `Dev Containers: Open Folder in Container...`.
- 6. Open WordPress via forward port: `Ctrl+Shift+P` (Command pallete) → `Forward a Ports` → `WordPress (80)` → open link in `Forwarded Address` column ![img](doc/vscode-open-forward-port.png)
- 7. Login into WordPress. Default username is `admin`, password is `password` (If not set by environment variable).
+ 1. Create your project directory.
+ 1. Open terminal and `cd` to your project directory.
+ 1. Clone this repository. `git clone https://github.com/chrono-meter/wp-plugin-devcontainer.git .devcontainer`
+ 1. Create sub directories. `mkdir mysql wp-content`
+ 1. Open cloned folder named `YOUR-PROJECT-NAME` in Visual Studio Code.
+ 1. Open dev container: `Ctrl+Shift+P` (Command pallete) → `Dev Containers: Open Folder in Container...`.
+ 1. Open WordPress via forward port: `Ctrl+Shift+P` (Command pallete) → `Forward a Ports` → `WordPress (80)` → open link in `Forwarded Address` column ![img](doc/vscode-open-forward-port.png)
+ 1. Login into WordPress. Default username is `admin`, password is `password` (If not set by environment variable).
 
 
 # Dev container settings

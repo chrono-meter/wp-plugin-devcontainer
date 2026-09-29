@@ -36,8 +36,8 @@ RUN set -eux; \
         echo "files = /etc/supervisor/conf.d/*.conf"; \
     } | tee /etc/supervisor/supervisord.conf && \
     { \
-        echo "[program:docker-php-entrypoint]"; \
-        echo "command=/usr/local/bin/docker-php-entrypoint apache2-foreground"; \
+        echo "[program:apache2]"; \
+        echo "command=apache2-foreground"; \
         echo "stdout_logfile=/dev/fd/1"; \
         echo "stdout_logfile_maxbytes=0"; \
         echo "redirect_stderr=true"; \
@@ -54,7 +54,7 @@ RUN set -eux; \
         echo "startsecs=0"; \
         echo "autorestart=false"; \
         echo "startretries=0"; \
-    } | tee /etc/supervisor/conf.d/apache2.conf && \
+    } | tee /etc/supervisor/conf.d/installer.conf && \
     { \
         echo "[program:cron]"; \
         echo "command=/usr/sbin/crond -f -i -m off -s -p -P"; \
