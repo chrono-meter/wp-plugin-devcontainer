@@ -2,6 +2,19 @@
 A simple dev container template for WordPress plugin development.
 
 
+# Features
+- WP-CLI
+- Composer
+- Apache2
+- Mock SMTP (Mailhog)
+- PHP_CodeSniffer
+- Ready to use NodeJS (NVM)
+- Ready to use Playwright or Selenium (novnc)
+- Xdebug
+- phpinfo (http://localhost/phpinfo.php)
+- adminer (http://localhost/adminer.php)
+
+
 # How to use
 
 > [!IMPORTANT]
@@ -22,66 +35,39 @@ A simple dev container template for WordPress plugin development.
           * Setup [Remote Tunnels](https://code.visualstudio.com/docs/remote/tunnels) or SSH (configure your router for forwarding ssh port).
           * Setup WoL or remote power-on method, if you need.
        1. Connect to server.
-       1. Recommended: Install [Docker for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker) in server.
+       1. Recommended: Install [Container Tools](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-containers) in server.
 
  1. Create your project directory.
- 1. Open terminal and `cd` to your project directory.
+ 1. Open terminal and `cd /path/to/your-project`.
  1. Clone this repository. `git clone https://github.com/chrono-meter/wp-plugin-devcontainer.git .devcontainer`
  1. Create sub directories. `mkdir mysql wp-content`
- 1. Open cloned folder named `YOUR-PROJECT-NAME` in Visual Studio Code.
+ 1. Open your project directory in Visual Studio Code.
  1. Open dev container: `Ctrl+Shift+P` (Command pallete) → `Dev Containers: Open Folder in Container...`.
- 1. Open WordPress via forward port: `Ctrl+Shift+P` (Command pallete) → `Forward a Ports` → `WordPress (80)` → open link in `Forwarded Address` column ![img](doc/vscode-open-forward-port.png)
+ 1. Check or open WordPress via forward port: `Ctrl+Shift+P` (Command pallete) → `Forward a Ports` → `WordPress (80)` → open link in `Forwarded Address` column ![img](doc/vscode-open-forward-port.png)
  1. Login into WordPress. Default username is `admin`, password is `password` (If not set by environment variable).
 
 
-# Dev container settings
-
-Dev container is inherited from [WordPress official image](https://hub.docker.com/_/wordpress).
-
-This container execute following steps on startup:
-
- 1. Build image. See [.devcontainer/wordpress-base.Dockerfile](wordpress-base.Dockerfile).
-
-    1. Configure user settings for www-data console operation.
-    2. Configure "php.ini".
-    3. Install composer.
-    4. Install WP-CLI.
-    5. `wp core download` like operation.
-    6. Set default user as `www-data`.
-    7. Set default directory as `/var/www/html`.
-    8. Install Xdebug.
-    9. Install `phpinfo()` file, location is `http://localhost:80/phpinfo.php`.
-    10. Install Adminer, location is `http://localhost:80/adminer.php`.
-
- 2. Wait for MySQL ready.
-
- 3. Configure `wp-config.php`.
-
- 4. `wp core install` with environment variables.
-
- 5. Run shell script file for WordPress first installation. Set `$WORDPRESS_SETUP_SCRIPT` environment variable.
-
-
-## Mailhog
+# Mailhog
 
 Dev container's smtp environment is provided by [Mailhog](https://github.com/mailhog/MailHog).
 
 To see emails that sent from WordPress, `Ctrl+Shift+P` (Command pallet) → `Forward a Ports` → Find forwarded `8025` port and open it in your browser.
 
 To check emails in your test, use [MailHog API v1](https://github.com/mailhog/MailHog/blob/master/docs/APIv1.md) or [MailHog API v2](https://github.com/mailhog/MailHog/blob/master/docs/APIv2.md).
+[There are NodeJS and PHP client libraries.](https://github.com/mailhog/MailHog/blob/master/docs/LIBRARIES.md)
 
 
-## References
+# References
  * WordPress Image
     * [Environment variables](https://hub.docker.com/_/wordpress#:~:text=How%20to%20use%20this%20image)
     * [docker-entrypoint.sh](https://github.com/docker-library/wordpress/blob/master/docker-entrypoint.sh)
     * [wp-config-docker.php](https://github.com/docker-library/wordpress/blob/master/wp-config-docker.php)
- * [.devcontainer/devcontainer.json](devcontainer.json)
+ * [devcontainer.json](devcontainer.json)
  * `devcontainer` service in [.devcontainer/common.yml](common.yml)
- * [.devcontainer/devcontainer-docker-compose.yml](devcontainer-docker-compose.yml)
+ * [docker-compose.yml](docker-compose.yml)
 
 
-## Tips
+# Tips
  * Enter dev container console (shell): `Shift+Esc` or `Ctrl+Shift+@` (new console)
  * Forward a Ports: `Ctrl+Shift+P` (Command pallet) → `Forward a Ports`
  * Exit/Reopen/Rebuild dev container: `Ctrl+Shift+P` (Command pallet) → type `reopen` ![img](doc/vscode-cp-reopen.png)
@@ -91,7 +77,7 @@ To check emails in your test, use [MailHog API v1](https://github.com/mailhog/Ma
  * [Find your favorite key bindings.](https://marketplace.visualstudio.com/search?target=VSCode&category=Keymaps&sortBy=Installs)
  * Reload apache (if you don't want to restart dev container): Run `/etc/init.d/apache2 reload` in dev container's console
 
-### Xdebug
+## Xdebug
  1. Bookmark `javascript:(function() {document.cookie='XDEBUG_TRIGGER='+'VSCODE'+';path=/;';document.location.reload();setTimeout(function() {document.cookie='XDEBUG_TRIGGER='+''+';expires=Mon, 05 Jul 2000 00:00:00 GMT;path=/;';}, 100);})()`
  2. Set breakpoint.
  3. Start Xdebug: `Shift+Alt+F9` or `Run and Debug` in Left sidebar → `Listen for Xdebug`
@@ -107,16 +93,17 @@ Do you get frustrated when your breakpoints don't work in Xdebug? First, calm do
  4. Finally, try to call `\xdebug_break();` on the breakpoint. If this method doesn't work then your Xdebug configuration is broken.
 
 
-### I can't access http://localhost or https://localhost.
+## I can't access http://localhost or https://localhost.
 Please check if another vscode or devcontainer is occupying the port 80/443.
 
 
-### wp db commands failed.
+## wp db commands failed.
 Add option `--defaults` for avoid [wp db commands add `--no-defaults` option](https://github.com/wp-cli/db-command/blob/v2.1.4/src/DB_Command.php#L2083-L2104).
+
 NOTE: This devcontainer adds `ssl-verify-server-cert=FALSE` into `/etc/mysql/conf.d/ignore-ssl.cnf`.
 
 
-### [User Role Editor](https://wordpress.org/plugins/user-role-editor/) activation failure via wp-cli installation.
+## [User Role Editor](https://wordpress.org/plugins/user-role-editor/) activation failure via wp-cli installation.
 There are lacking caps:
  * ure_create_roles
  * ure_delete_roles
@@ -131,13 +118,6 @@ wp plugin install --activate user-role-editor
 wp eval 'do_action("activate_user-role-editor/user-role-editor.php");'
 ```
 
-### Links
+# Links
  * https://wordpress.org/plugins/tags/debug/
  * https://wordpress.org/plugins/tags/development/
-
-
-# todo: Test envinronment settings
- * [.devcontainer/run-test.sh](run-test.sh)
- * [test-docker-compose-options.yml](../test-docker-compose-options.yml)
- * [.devcontainer/test-docker-compose.yml](test-docker-compose.yml)
- * [.devcontainer/common.yml](common.yml)
