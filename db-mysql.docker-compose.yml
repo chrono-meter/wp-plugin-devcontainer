@@ -1,0 +1,20 @@
+services:
+  db:
+    image: mysql    # https://hub.docker.com/_/mysql
+    volumes:
+      # NOTE Without persistent storage, rebuilding dev container will be drop any changes on non host mounted directory.
+      - "../mysql:/var/lib/mysql"
+    environment:
+      # One of MYSQL_ROOT_PASSWORD: "<your_root_password>" or MYSQL_RANDOM_ROOT_PASSWORD: "yes" or MYSQL_ALLOW_EMPTY_PASSWORD: "yes" must be set for MySQL to start properly.
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_DATABASE: ${WORDPRESS_DB_NAME:-wordpress}
+      MYSQL_USER: ${WORDPRESS_DB_USER:-wordpress}
+      MYSQL_PASSWORD: ${WORDPRESS_DB_PASSWORD:-wordpress}
+    # https://stackoverflow.com/a/54854239/3622941
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 100
+    # NOTE: Reset root password https://gist.github.com/rordi/ab55c92848fd06884172ed22ae88d7df

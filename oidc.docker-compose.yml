@@ -1,0 +1,76 @@
+services:
+  # https://github.com/Soluto/oidc-server-mock
+  # https://github.com/soluto/oidc-server-mock/pkgs/container/oidc-server-mock
+  oidc:
+    image: ghcr.io/soluto/oidc-server-mock:9.0.1
+    environment:
+      <<: *common-environment
+      ASPNETCORE_ENVIRONMENT: Development
+      SERVER_OPTIONS_INLINE: |
+        {
+          "AccessTokenJwtType": "JWT",
+          "Discovery": {
+            "ShowKeySet": true
+          },
+          "Authentication": {
+            "CookieSameSiteMode": "Lax",
+            "CheckSessionCookieSameSiteMode": "Lax"
+          }
+        }
+      LOGIN_OPTIONS_INLINE: |
+        {
+          "AllowRememberLogin": false
+        }
+      LOGOUT_OPTIONS_INLINE: |
+        {
+          "AutomaticRedirectAfterSignOut": true
+        }
+      USERS_CONFIGURATION_INLINE: |
+        [
+          {
+            "SubjectId": "1",
+            "Username": "${WORDPRESS_INSTALL_ADMIN_USER:-admin}",
+            "Password": "${WORDPRESS_INSTALL_ADMIN_PASSWORD:-password}",
+            "Claims": [
+              {
+                "Type": "name",
+                "Value": "${WORDPRESS_INSTALL_ADMIN_USER:-admin}",
+                "ValueType": "string"
+              },
+              {
+                "Type": "email",
+                "Value": "${WORDPRESS_INSTALL_ADMIN_EMAIL:-admin@wordpress.local}",
+                "ValueType": "string"
+              }
+            ]
+          }
+        ]
+      # https://docs.duendesoftware.com/identityserver/v6/reference/models/client/
+      CLIENTS_CONFIGURATION_INLINE: |
+        [
+          {
+            "ClientId": "client-credentials-mock-client",
+            "ClientSecrets": ["client-credentials-mock-client-secret"],
+            "Description": "Client for client credentials flow",
+            "AllowedGrantTypes": ["authorization_code"],
+            "RequirePkce": false,
+            "AllowAccessTokensViaBrowser": true,
+            "RedirectUris": ${OIDC_REDIRECT_URIS:-["http://localhost/YOUR_REDIRECT_PATH"]},
+            "AllowedScopes": ["openid", "profile", "email"],
+            "ClientClaimsPrefix": ""
+          }
+        ]
+      ASPNET_SERVICES_OPTIONS_INLINE: |
+        { 
+          "ForwardedHeadersOptions": { 
+            "ForwardedHeaders": "All"
+          }
+        }
+    # https://github.com/Soluto/oidc-server-mock/blob/master/src/Dockerfile
+    healthcheck:
+      start_period: 2s
+      interval: 1s
+      timeout: 100ms
+      retries: 10
+      # https://github.com/Soluto/oidc-server-mock/issues/151
+      test: curl -k --location http://localhost:8080/.well-known/openid-configuration || exit 1

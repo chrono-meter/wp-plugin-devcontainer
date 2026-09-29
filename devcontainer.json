@@ -1,0 +1,222 @@
+// https://containers.dev/implementors/json_reference/
+{
+    "name": "${localWorkspaceFolderBasename}",
+    "dockerComposeFile": [
+        "docker-compose.yml",
+    ],
+    "service": "devcontainer",
+    "workspaceFolder": "/var/www/html",
+    "remoteUser": "www-data",
+    // https://containers.dev/features
+    "features": {
+        // https://github.com/devcontainers/features/tree/main/src/git
+        "ghcr.io/devcontainers/features/git:1": {},
+        // https://github.com/devcontainers/features/tree/main/src/github-cli
+        "ghcr.io/devcontainers/features/github-cli:1": {},
+        // https://github.com/devcontainers/features/tree/main/src/desktop-lite
+        // https://github.com/devcontainers/features/blob/main/src/desktop-lite/install.sh
+        "ghcr.io/devcontainers/features/desktop-lite:1": {},
+    },
+    "forwardPorts": [
+        80,
+        443,
+        6080,
+        9003,
+        "smtp:8025",
+    ],
+    "portsAttributes": {
+        "localhost:80": {
+            "label": "WordPress",
+            "protocol": "http",
+        },
+        "localhost:443": {
+            "label": "WordPress (https)",
+            "protocol": "https",
+        },
+        "localhost:6080": {
+            "label": "desktop-lite (novnc)",
+        },
+        "localhost:9003": {
+            "label": "Xdebug",
+            "requireLocalPort": true,
+        },
+        "smtp:8025": {
+            "label": "MailHog",
+            "protocol": "http",
+        },
+    },
+    // https://containers.dev/supporting
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.shell.linux": "/bin/bash",
+                "php.suggest.basic": false, // avoids duplicate autocomplete
+                // for searching composer's vendor or else...
+                "search.useIgnoreFiles": false,
+                "[php]": {
+                    // for select PHP style variable name https://stackoverflow.com/a/58397556
+                    "editor.wordSeparators": "`~!@#%^&*()-=+[{]}\\|;:'\",.<>/?",
+                },
+                // xdebug.php-pack
+                "php.executablePath": "/usr/local/bin/php",
+                //"php.debug.ideKey": "PHPSTORM",
+                //"php.debug.ideKey": "VSCODE",
+                // ValeryanM.vscode-phpsab
+                // "phpsab.standard": "WordPress",  // Don't set this. Let phpsab find the ruleset itself. If you set it to "WordPress", it won't find the custom ruleset and won't apply any of the custom rules. https://github.com/valeryan/vscode-phpsab/blob/v0.0.24/src/resolvers/standards-path-resolver.ts#L37
+                "phpsab.snifferEnable": true, // disable this if you don't need suggestions
+                "phpsab.snifferShowSources": true,
+                "phpsab.autoRulesetSearch": true,
+                "phpsab.executablePathCBF": "/var/www/.composer/vendor/bin/phpcbf",
+                "phpsab.executablePathCS": "/var/www/.composer/vendor/bin/phpcs",
+                "phpsab.snifferArguments": [
+                    "--ignore=*/wp-admin/*,*/wp-includes/*,*/vendor/*",
+                ],
+                "phpsab.allowedAutoRulesets": [
+                    ".phpcs.xml",
+                    ".phpcs.xml.dist",
+                    "phpcs.xml",
+                    "phpcs.xml.dist",
+                    "phpcs.ruleset.xml",
+                    "ruleset.xml",
+                ],
+                "launch": {
+                    "version": "0.2.0",
+                    "configurations": [
+                        {
+                            "name": "Listen for Xdebug",
+                            "type": "php",
+                            "request": "launch",
+                            "port": 9003
+                        },
+                        {
+                            "name": "Launch currently open script",
+                            "type": "php",
+                            "request": "launch",
+                            "program": "${file}",
+                            "cwd": "${fileDirname}",
+                            "port": 0,
+                            "runtimeArgs": [
+                                "-dxdebug.start_with_request=yes"
+                            ],
+                            "env": {
+                                "XDEBUG_MODE": "debug,develop",
+                                "XDEBUG_CONFIG": "client_port=${port}"
+                            }
+                        }
+                    ]
+                },
+                "tasks": {
+                    // https://code.visualstudio.com/docs/editor/tasks-appendix
+                    // https://code.visualstudio.com/docs/editor/variables-reference
+                    // https://marketplace.visualstudio.com/items?itemName=rioj7.command-variable
+                    "version": "2.0.0",
+                    "tasks": [
+                        {
+                            "label": "Update WordPress (core, db, all plugins, all themes, all translations)",
+                            "type": "shell",
+                            "command": "wp core update --debug --skip-plugins --skip-themes --skip-packages && wp core update-db --debug --skip-plugins --skip-themes --skip-packages ; wp plugin update --all --debug ; wp theme update --all --debug ; wp language core update --debug ; wp language plugin update --all --debug ; wp language theme update --all --debug",
+                            "group": {
+                                "kind": "build",
+                                "isDefault": false
+                            },
+                            "options": {
+                                "cwd": "/var/www/html"
+                            }
+                        },
+                        {
+                            "label": "Export database",
+                            "type": "shell",
+                            "command": "wp db export --add-drop-table",
+                            "group": {
+                                "kind": "build",
+                                "isDefault": false
+                            },
+                            "options": {
+                                "cwd": "/var/www/html"
+                            }
+                        },
+                        {
+                            "label": "Import database",
+                            "type": "shell",
+                            "command": "wp db import ${input:importSqlFile}",
+                            "group": {
+                                "kind": "build",
+                                "isDefault": false
+                            },
+                            "options": {
+                                "cwd": "/var/www/html"
+                            }
+                        },
+                        {
+                            "label": "Show debug.log",
+                            "type": "shell",
+                            "command": "[[ -v REMOTE_CONTAINERS ]] && tail -f /var/www/html/wp-content/debug.log",
+                            "presentation": {
+                                "reveal": "always",
+                                "panel": "new"
+                            },
+                            "runOptions": {
+                                "runOn": "folderOpen"
+                            }
+                        },
+                        {
+                            "label": "Truncate debug.log",
+                            "type": "shell",
+                            "command": "[[ -v REMOTE_CONTAINERS ]] && truncate -s 0 /var/www/html/wp-content/debug.log",
+                            "presentation": {
+                                "reveal": "silent"
+                            },
+                            "problemMatcher": []
+                        },
+                        {
+                            "label": "Open debug.log",
+                            "type": "shell",
+                            "command": "code /var/www/html/wp-content/debug.log",
+                            "presentation": {
+                                "reveal": "always",
+                                "panel": "new"
+                            }
+                        }
+                    ],
+                    "inputs": [
+                        {
+                            "id": "importSqlFile",
+                            "type": "command",
+                            "command": "extension.commandvariable.file.pickFile",
+                            "args": {
+                                "include": "**/*.sql"
+                            }
+                        },
+                        {
+                            "id": "selectPlugin",
+                            "type": "command",
+                            "command": "extension.commandvariable.file.openDialog",
+                            "args": {
+                                "canSelect": "folders",
+                                "defaultUri": "/var/www/html/wp-content/plugins"
+                            }
+                        },
+                        {
+                            "id": "selectTheme",
+                            "type": "command",
+                            "command": "extension.commandvariable.file.openDialog",
+                            "args": {
+                                "canSelect": "folders",
+                                "defaultUri": "/var/www/html/wp-content/themes"
+                            }
+                        }
+                    ]
+                },
+            },
+            "extensions": [
+                "xdebug.php-pack",
+                "ValeryanM.vscode-phpsab",
+                // "wordpresstoolbox.wordpress-toolbox",
+                // "johnbillion.vscode-wordpress-hooks",
+                "ms-playwright.playwright",
+                "dbaeumer.vscode-eslint",
+                "rioj7.command-variable",
+            ],
+        },
+    },
+}

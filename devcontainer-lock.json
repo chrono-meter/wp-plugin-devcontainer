@@ -1,0 +1,19 @@
+{
+  "features": {
+    "ghcr.io/devcontainers/features/desktop-lite:1": {
+      "version": "1.2.9",
+      "resolved": "ghcr.io/devcontainers/features/desktop-lite@sha256:d8649bc8ca8e50a52fbee29d281739ea05dc1022905b185434d6bbe9afc8f221",
+      "integrity": "sha256:d8649bc8ca8e50a52fbee29d281739ea05dc1022905b185434d6bbe9afc8f221"
+    },
+    "ghcr.io/devcontainers/features/git:1": {
+      "version": "1.3.5",
+      "resolved": "ghcr.io/devcontainers/features/git@sha256:27905dc196c01f77d6ba8709cb82eeaf330b3b108772e2f02d1cd0d826de1251",
+      "integrity": "sha256:27905dc196c01f77d6ba8709cb82eeaf330b3b108772e2f02d1cd0d826de1251"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "version": "1.1.3",
+      "resolved": "ghcr.io/devcontainers/features/github-cli@sha256:bd7ab48a832228f633239277552c30b353867fef2e5b037e064b4e64f0b843f2",
+      "integrity": "sha256:bd7ab48a832228f633239277552c30b353867fef2e5b037e064b4e64f0b843f2"
+    }
+  }
+}

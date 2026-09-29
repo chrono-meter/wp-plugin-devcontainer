@@ -1,0 +1,44 @@
+include:
+  - db-mysql.docker-compose.yml
+  - smtp-mailhog.docker-compose.yml
+
+
+services:
+
+  devcontainer:
+    build:
+      context: .
+      dockerfile: wordpress-base.Dockerfile
+      target: devcontainer
+      args:
+        WORDPRESS_VERSION: ${WORDPRESS_VERSION:-php8.5-apache}
+        WORDPRESS_CORE_VERSION: ${WORDPRESS_CORE_VERSION:-latest}
+
+    # environment:
+    #   # Common workaround for containers without `less` or `more`.
+    #   #PAGER: cat
+
+    volumes:
+      - ".:/var/www/html/.devcontainer"
+      - "..:/var/www/html/.workspace"
+
+      # persistent storage
+      - "../.vscode:/var/www/html/.vscode"
+      - "../wp-content:/var/www/html/wp-content"
+
+      # your plugin
+      # - "../src:/var/www/html/wp-content/plugins/YOUR_PLUGIN_SLUG"
+
+      # SSL certificate
+      # - "your-ssl.key:/var/www/ssl-cert-snakeoil.key:ro"
+      # - "your-ssl.pem:/var/www/ssl-cert-snakeoil.pem:ro"
+
+    extra_hosts:
+      # For debugging from host machine.
+      - "host.docker.internal:host-gateway"
+
+    depends_on:
+      db:
+        condition: service_healthy
+      smtp:
+        condition: service_healthy

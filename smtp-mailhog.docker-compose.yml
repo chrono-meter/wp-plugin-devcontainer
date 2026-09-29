@@ -1,0 +1,12 @@
+services:
+  # https://github.com/mailhog/MailHog
+  # https://github.com/mailhog/MailHog/blob/master/docs/CONFIG.md
+  # https://github.com/mailhog/MailHog/blob/master/docs/LIBRARIES.md
+  smtp:
+    image: mailhog/mailhog
+    healthcheck:
+      test: nc -z 127.0.0.1 1025 || exit 1
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 20
