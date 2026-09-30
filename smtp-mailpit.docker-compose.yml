@@ -1,0 +1,3 @@
+services:
+  smtp:
+    image: axllent/mailpit:${MAILPIT_VERSION:-latest}

@@ -35,6 +35,7 @@ services:
       - 10.89.42.2
     command: sh -c "sleep infinity"
 
+# You can override config in docker-compose.yml file that includes this service.
 configs:
   coredns-corefile:
     content: |+

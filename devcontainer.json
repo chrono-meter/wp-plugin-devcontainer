@@ -41,7 +41,7 @@
             "requireLocalPort": true,
         },
         "smtp:8025": {
-            "label": "MailHog",
+            "label": "Sent Emails",
             "protocol": "http",
         },
     },

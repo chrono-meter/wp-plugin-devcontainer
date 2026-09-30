@@ -2,9 +2,11 @@ services:
   db:
     image: mariadb:${MARIADB_VERSION:-latest}  # https://hub.docker.com/_/mariadb
     volumes:
+      # NOTE Without persistent storage, rebuilding dev container will be drop any changes on non host mounted directory.
       - "../mariadb:/var/lib/mysql"
-      # For non environment variables configuration, use a custom configuration file.
-      # - "../mariadb.cnf:/etc/mysql/mariadb.conf.d/99-my.cnf"
+    configs:
+      - source: mariadb-conf
+        target: /etc/mysql/mariadb.conf.d/99-my.cnf
     environment:
       # MariaDB Server Docker Official Image supports `MYSQL_*` variants.
       MYSQL_DATABASE: ${WORDPRESS_DB_NAME:-wordpress}
@@ -14,9 +16,6 @@ services:
       MARIADB_AUTO_UPGRADE: "yes"
     healthcheck:
       # https://mariadb.com/kb/en/using-healthcheck-sh/#comment_6578
-      interval: 30s
-      timeout: 30s
-      retries: 3
       test:
         [
           "CMD",
@@ -25,3 +24,14 @@ services:
           "--connect",
           "--innodb_initialized"
         ]
+      start_period: 5s
+      interval: 30s
+      timeout: 5s
+      retries: 100
+
+
+# You can override config in docker-compose.yml file that includes this service.
+configs:
+  mariadb-conf:
+    content: |+
+      # Custom MariaDB configuration goes here.

@@ -1,0 +1,31 @@
+services:
+
+  devcontainer-base:
+    # IMPORTANT: [The default .env file is picked up from the root of the project](https://containers.dev/implementors/json_reference/#:~:text=The%20default%20.env%20file%20is%20picked%20up%20from%20the%20root%20of%20the%20project)
+    env_file:
+      - .env
+
+    build:
+      context: .
+      dockerfile: wordpress-base.Dockerfile
+      target: devcontainer
+      args:
+        WORDPRESS_CONTAINER_VERSION: ${WORDPRESS_CONTAINER_VERSION:-latest}
+        WORDPRESS_CORE_VERSION: ${WORDPRESS_CORE_VERSION:-latest}
+
+    # environment:
+    #   # Common workaround for containers without `less` or `more`.
+    #   #PAGER: cat
+
+    volumes:
+      - ".:/var/www/html/.devcontainer"
+
+    extra_hosts:
+      # For debugging from host machine.
+      - "host.docker.internal:host-gateway"
+
+    depends_on:
+      db:
+        condition: service_healthy
+      smtp:
+        condition: service_healthy

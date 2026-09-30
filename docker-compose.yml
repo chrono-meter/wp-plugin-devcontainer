@@ -1,29 +1,16 @@
 include:
   - db-mysql.docker-compose.yml
-  - smtp-mailhog.docker-compose.yml
+  - smtp-mailpit.docker-compose.yml
 
 
 services:
 
   devcontainer:
-    build:
-      context: .
-      dockerfile: wordpress-base.Dockerfile
-      target: devcontainer
-      args:
-        WORDPRESS_VERSION: ${WORDPRESS_VERSION:-php8.5-apache}
-        WORDPRESS_CORE_VERSION: ${WORDPRESS_CORE_VERSION:-latest}
-
-    # IMPORTANT: [The default .env file is picked up from the root of the project](https://containers.dev/implementors/json_reference/#:~:text=The%20default%20.env%20file%20is%20picked%20up%20from%20the%20root%20of%20the%20project)
-    env_file:
-      - .env
-
-    # environment:
-    #   # Common workaround for containers without `less` or `more`.
-    #   #PAGER: cat
+    extends:
+      file: devcontainer-base.docker-compose.yml
+      service: devcontainer-base
 
     volumes:
-      - ".:/var/www/html/.devcontainer"
       - "..:/var/www/html/.workspace"
 
       # persistent storage
@@ -37,12 +24,16 @@ services:
       # - "your-ssl.key:/var/www/ssl-cert-snakeoil.key:ro"
       # - "your-ssl.pem:/var/www/ssl-cert-snakeoil.pem:ro"
 
-    extra_hosts:
-      # For debugging from host machine.
-      - "host.docker.internal:host-gateway"
-
+    # NOTE: `extends` will remove referenced `depends_on` entries from the base service. You need to redefine them here if necessary.
     depends_on:
       db:
         condition: service_healthy
       smtp:
         condition: service_healthy
+
+
+configs:
+  mysql-conf:
+    content: |+
+      # [mysqld]
+      # You can override MySQL configuration here.

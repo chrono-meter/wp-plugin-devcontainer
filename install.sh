@@ -27,6 +27,7 @@ wp core install --path=/var/www/html/ \
     --locale=${WORDPRESS_LOCALE:-en_US} \
     --skip-email
 
+# Avoid dependency on default themes that are added every year.
 # https://wordpress.org/themes/classic/
 wp theme install --path=/var/www/html/ \
     classic --activate
@@ -35,5 +36,7 @@ wp plugin install --path=/var/www/html/ \
     query-monitor \
     wordpress-beta-tester \
     user-switching
+
+wp eval --path=/var/www/html/ 'wp_mail("you@example.com", "Installation Complete", "WordPress has been successfully installed.");'
 
 exit 0

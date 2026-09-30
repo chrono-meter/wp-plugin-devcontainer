@@ -4,6 +4,9 @@ services:
     volumes:
       # NOTE Without persistent storage, rebuilding dev container will be drop any changes on non host mounted directory.
       - "../mysql:/var/lib/mysql"
+    configs:
+      - source: mysql-conf
+        target: /etc/mysql/mysql.conf.d/99-my.cnf
     environment:
       # One of MYSQL_ROOT_PASSWORD: "<your_root_password>" or MYSQL_RANDOM_ROOT_PASSWORD: "yes" or MYSQL_ALLOW_EMPTY_PASSWORD: "yes" must be set for MySQL to start properly.
       MYSQL_RANDOM_ROOT_PASSWORD: "yes"
@@ -14,7 +17,14 @@ services:
     healthcheck:
       test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
       start_period: 5s
-      interval: 5s
+      interval: 30s
       timeout: 5s
       retries: 100
     # NOTE: Reset root password https://gist.github.com/rordi/ab55c92848fd06884172ed22ae88d7df
+
+
+# You can override config in docker-compose.yml file that includes this service.
+configs:
+  mysql-conf:
+    content: |+
+      # Custom MySQL configuration goes here.

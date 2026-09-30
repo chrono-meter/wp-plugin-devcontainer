@@ -6,7 +6,7 @@ A simple dev container template for WordPress plugin development.
 - WP-CLI
 - Composer
 - Apache2
-- Mock SMTP (Mailhog)
+- Mock SMTP (Mailpit)
 - PHP_CodeSniffer
 - Ready to use NodeJS (NVM)
 - Ready to use Playwright or Selenium (novnc)
@@ -42,16 +42,23 @@ A simple dev container template for WordPress plugin development.
  1. Clone this repository. `git clone https://github.com/chrono-meter/wp-plugin-devcontainer.git .devcontainer`
  1. Create sub directories. `mkdir mysql wp-content`
  1. Open your project directory in Visual Studio Code.
+ 1. Edit [wp-config-extra.php](wp-config-extra.php), [devcontainer.json](devcontainer.json), [docker-compose.yml](docker-compose.yml), [wordpress-base.Dockerfile](wordpress-base.Dockerfile) or others as necessary.
  1. Open dev container: `Ctrl+Shift+P` (Command pallete) → `Dev Containers: Open Folder in Container...`.
  1. Check or open WordPress via forward port: `Ctrl+Shift+P` (Command pallete) → `Forward a Ports` → `WordPress (80)` → open link in `Forwarded Address` column ![img](doc/vscode-open-forward-port.png)
  1. Login into WordPress. Default username is `admin`, password is `password` (If not set by environment variable).
 
 
-# Mailhog
-
-Dev container's smtp environment is provided by [Mailhog](https://github.com/mailhog/MailHog).
+# Mock SMTP
 
 To see emails that sent from WordPress, `Ctrl+Shift+P` (Command pallet) → `Forward a Ports` → Find forwarded `8025` port and open it in your browser.
+
+
+## Mailpit
+
+See [https://mailpit.axllent.org/](https://mailpit.axllent.org/).
+
+
+## MailHog
 
 To check emails in your test, use [MailHog API v1](https://github.com/mailhog/MailHog/blob/master/docs/APIv1.md) or [MailHog API v2](https://github.com/mailhog/MailHog/blob/master/docs/APIv2.md).
 [There are NodeJS and PHP client libraries.](https://github.com/mailhog/MailHog/blob/master/docs/LIBRARIES.md)
