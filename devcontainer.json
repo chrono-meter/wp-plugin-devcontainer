@@ -217,6 +217,30 @@
                 "dbaeumer.vscode-eslint",
                 "rioj7.command-variable",
             ],
+            "mcp": {
+                "servers": {
+                    "playwright": {
+                        "type": "stdio",
+                        "command": "npx",
+                        "args": [
+                            "@playwright/mcp@latest",
+                        ],
+                    },
+                    // https://developer.wordpress.org/news/2026/02/from-abilities-to-ai-agents-introducing-the-wordpress-mcp-adapter/
+                    // https://github.com/WordPress/mcp-adapter/
+                    "wordpress-mcp-server": {
+                        "command": "wp",
+                        "cwd": "${workspaceFolder}",
+                        "envFile": "${workspaceFolder}/.devcontainer/.env",
+                        "args": [
+                            "mcp-adapter",
+                            "serve",
+                            "--server=mcp-adapter-default-server",
+                            "--user=${env:WORDPRESS_INSTALL_ADMIN_USER}",
+                        ],
+                    },
+                },
+            },
         },
     },
 }
