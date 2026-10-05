@@ -48,7 +48,16 @@ RUN set -eux; \
         echo "nodaemon=true"; \
         echo "logfile=/dev/null"; \
         echo "logfile_maxbytes=0"; \
-        echo "pidfile=/var/run/supervisord.pid"; \
+        echo "pidfile=/var/www/supervisord.pid"; \
+        echo ""; \
+        echo "[rpcinterface:supervisor]"; \
+        echo "supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface"; \
+        echo ""; \
+        echo "[unix_http_server]"; \
+        echo "file=/var/www/supervisor.sock"; \
+        echo ""; \
+        echo "[supervisorctl]"; \
+        echo "serverurl=unix:///var/www/supervisor.sock"; \
         echo ""; \
         echo "[include]"; \
         echo "files = /etc/supervisor/conf.d/*.conf"; \
