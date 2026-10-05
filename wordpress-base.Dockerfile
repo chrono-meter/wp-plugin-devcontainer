@@ -18,12 +18,30 @@ RUN usermod --shell /bin/bash www-data && \
 
 
 #
+# Supercronic
+#
+# https://github.com/aptible/supercronic/releases
+ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.49/supercronic-linux-amd64 \
+    SUPERCRONIC_SHA1SUM=e63c11a9726b775a6a11801e81af4f3fb926aa68 \
+    SUPERCRONIC=supercronic-linux-amd64
+
+RUN curl -fsSLO "$SUPERCRONIC_URL" \
+    && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
+    && chmod +x "$SUPERCRONIC" \
+    && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
+    && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
+RUN echo "*/1 * * * * wp cron event run --due-now" >> "/etc/crontab" \
+    && chown www-data:www-data "/etc/crontab" \
+    && chmod 644 "/etc/crontab"
+
+
+#
 # Configure Supervisor as entrypoint
 #
 # https://docs.docker.com/engine/containers/multi-service_container/#use-a-process-manager
 # https://supervisord.org/
 RUN set -eux; \
-    apt-get install -yq supervisor cronie && \
+    apt-get install -yq supervisor && \
     mkdir -p /etc/supervisor/conf.d/ && \
     { \
         echo "[supervisord]"; \
@@ -56,9 +74,13 @@ RUN set -eux; \
         echo "startretries=0"; \
     } | tee /etc/supervisor/conf.d/installer.conf && \
     { \
-        echo "[program:cron]"; \
-        echo "command=/usr/sbin/crond -f -i -m off -s -p -P"; \
-    } | tee /etc/supervisor/conf.d/cron.conf
+        echo "[program:supercronic]"; \
+        echo "command=/usr/local/bin/supercronic -inotify /etc/crontab"; \
+        echo "stdout_logfile=/dev/fd/1"; \
+        echo "stdout_logfile_maxbytes=0"; \
+        echo "redirect_stderr=true"; \
+        echo "autorestart=true"; \
+    } | tee /etc/supervisor/conf.d/supercronic.conf
 # https://github.com/docker-library/wordpress/blob/c82afd7240879748c5e4a64e5fb04e2d34172686/latest/php8.3/apache/Dockerfile
 # NOTE: Default entrypoint skips all steps when unknown arguments given, see https://github.com/docker-library/wordpress/blob/c82afd7240879748c5e4a64e5fb04e2d34172686/latest/php8.3/apache/docker-entrypoint.sh
 ENTRYPOINT ["/usr/bin/supervisord"]
