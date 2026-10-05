@@ -10,6 +10,10 @@ services:
       file: devcontainer-base.docker-compose.yml
       service: devcontainer-base
 
+    configs:
+      - source: wpcli-yml
+        target: /var/www/html/wp-cli.yml
+
     volumes:
       - "..:/var/www/html/.workspace"
 
@@ -33,6 +37,10 @@ services:
 
 
 configs:
+  wpcli-yml:
+    content: |+
+      apache_modules:
+        - mod_rewrite
   mysql-conf:
     content: |+
       # [mysqld]
