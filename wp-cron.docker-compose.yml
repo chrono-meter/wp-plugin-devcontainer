@@ -1,0 +1,12 @@
+services:
+  wp-cron:
+    container_name: wp-cron
+    image: mcuadros/ofelia:latest
+    command: daemon --docker -f label=com.docker.compose.project=${COMPOSE_PROJECT_NAME}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      ofelia.job-exec.wp-cron.schedule: "@every ${WP_CRON_INTERVAL:-1m}"
+      ofelia.job-exec.wp-cron.container: "devcontainer"
+      ofelia.job-exec.wp-cron.user: "www-data"
+      ofelia.job-exec.wp-cron.command: "wp cron event run --due-now"
