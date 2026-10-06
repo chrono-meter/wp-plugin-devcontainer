@@ -57,6 +57,9 @@ define( 'AUTOMATIC_UPDATER_DISABLED', true );
 // Not well documented. https://wordpress.org/search/CORE_UPGRADE_SKIP_NEW_BUNDLED/
 define( 'CORE_UPGRADE_SKIP_NEW_BUNDLED', true );
 
+// Disable to call `spawn_cron()` at "init" action. Crons would be processed via external triggers.
+define( 'DISABLE_WP_CRON', true );
+
 // https://github.com/johnbillion/query-monitor/blob/0741b15ea0bc05dc9b6fd71af246cf83cbc45f33/collectors/php_errors.php#L75
 define( 'QM_DISABLE_ERROR_HANDLER', true );
 define( 'QM_ENABLE_CAPS_PANEL', true );

@@ -248,14 +248,6 @@ RUN echo "<?php phpinfo();" > /var/www/html/phpinfo.php
 
 
 #
-# Install Adminer
-#
-# NOTE: SSL status at www.adminer.org is seems unstable. So we use github url instead of "https://www.adminer.org/latest-mysql-en.php".
-RUN curl https://github.com/vrana/adminer/releases/download/v6.1.1/adminer-6.1.1-mysql.php --location --output /var/www/html/adminer-mysql.php
-COPY adminer.php /var/www/html/
-
-
-#
 # Deny access to hidden files
 #
 RUN echo "RewriteRule ^(\..*)$ - [F,L]" | tee --append /var/www/html/.htaccess

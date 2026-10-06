@@ -23,7 +23,8 @@
         6080,
         9003,
         "smtp:8025",
-        "dozzle:8080"
+        "dozzle:8080",
+        "adminer:8080",
     ],
     "portsAttributes": {
         "localhost:80": {
@@ -47,6 +48,10 @@
         },
         "dozzle:8080": {
             "label": "Logs (Dozzle)",
+            "protocol": "http",
+        },
+        "adminer:8080": {
+            "label": "Database (Adminer)",
             "protocol": "http",
         },
     },

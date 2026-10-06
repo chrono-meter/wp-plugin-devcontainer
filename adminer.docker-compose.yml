@@ -1,0 +1,13 @@
+services:
+  adminer:
+    container_name: adminer
+    image: ghcr.io/mvandrew/adminer-autologin
+    environment:
+      ADMINER_DRIVER: server
+      ADMINER_SERVER: db
+      ADMINER_DB: ${WORDPRESS_DB_NAME:-wordpress}
+      ADMINER_USERNAME: ${WORDPRESS_DB_USER:-wordpress}
+      ADMINER_PASSWORD: ${WORDPRESS_DB_PASSWORD:-wordpress}
+    depends_on:
+      db:
+        condition: service_healthy
