@@ -1,0 +1,7 @@
+services:
+  dozzle:
+    image: amir20/dozzle
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - DOZZLE_FILTER=label=com.docker.compose.project=${COMPOSE_PROJECT_NAME}

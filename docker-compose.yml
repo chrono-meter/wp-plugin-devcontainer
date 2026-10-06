@@ -2,6 +2,7 @@ include:
   - db-mysql.docker-compose.yml
   - smtp-mailpit.docker-compose.yml
   - wp-cron.docker-compose.yml
+  - logging-dozzle.docker-compose.yml
 
 
 services:
