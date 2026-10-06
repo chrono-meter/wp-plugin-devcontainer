@@ -3,6 +3,7 @@ services:
   # https://github.com/mailhog/MailHog/blob/master/docs/CONFIG.md
   # https://github.com/mailhog/MailHog/blob/master/docs/LIBRARIES.md
   smtp:
+    container_name: smtp
     image: mailhog/mailhog
     healthcheck:
       test: nc -z 127.0.0.1 1025 || exit 1

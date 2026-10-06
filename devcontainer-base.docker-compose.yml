@@ -1,6 +1,9 @@
 services:
 
   devcontainer-base:
+    # Explicitly specify the `container_name` to make it easier to reference in Docker API.
+    container_name: devcontainer
+
     # IMPORTANT: [The default .env file is picked up from the root of the project](https://containers.dev/implementors/json_reference/#:~:text=The%20default%20.env%20file%20is%20picked%20up%20from%20the%20root%20of%20the%20project)
     env_file:
       - .env

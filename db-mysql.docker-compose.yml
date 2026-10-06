@@ -1,5 +1,6 @@
 services:
   db:
+    container_name: db
     image: mysql:${MYSQL_VERSION:-latest}    # https://hub.docker.com/_/mysql
     volumes:
       # NOTE Without persistent storage, rebuilding dev container will be drop any changes on non host mounted directory.

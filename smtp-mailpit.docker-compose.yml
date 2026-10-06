@@ -1,3 +1,4 @@
 services:
   smtp:
+    container_name: smtp
     image: axllent/mailpit:${MAILPIT_VERSION:-latest}
